@@ -8,6 +8,7 @@ import { getOrCreateSessionId, setSessionCookie } from '@/lib/session';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // Max for Vercel Hobby plan
 
 export async function POST(request: NextRequest) {
   try {
