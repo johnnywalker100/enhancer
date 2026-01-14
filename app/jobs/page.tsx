@@ -195,7 +195,7 @@ export default function JobsPage() {
                             <div className="flex items-start justify-between gap-4">
                               <div className="min-w-0">
                                 <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors duration-200">
-                                  {job.preset_id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                  Enhancement Job
                                 </h3>
                                 <p className="text-sm text-muted-foreground mt-1">
                                   {formatDate(job.created_at)}

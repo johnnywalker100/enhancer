@@ -13,7 +13,6 @@ import { cn } from '@/lib/utils';
 import { 
   ArrowLeft, 
   Calendar, 
-  Tag, 
   Settings, 
   CheckCircle, 
   XCircle, 
@@ -209,12 +208,6 @@ export default function JobDetailPage() {
                       <Calendar className="w-4 h-4" />
                       {formatDate(job.created_at)}
                     </div>
-                    {preset && (
-                      <div className="flex items-center gap-1.5">
-                        <Tag className="w-4 h-4" />
-                        {preset.name}
-                      </div>
-                    )}
                   </div>
                 </div>
 
@@ -300,18 +293,6 @@ export default function JobDetailPage() {
                   <h2 className="text-base font-semibold text-foreground">Job Details</h2>
                 </div>
                 <div className="space-y-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Preset</p>
-                    <p className="text-sm font-medium text-foreground">
-                      {preset?.name || job.preset_id}
-                    </p>
-                  </div>
-                  {preset?.description && (
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Description</p>
-                      <p className="text-sm text-muted-foreground">{preset.description}</p>
-                    </div>
-                  )}
                   {job.fal_request_id && (
                     <div>
                       <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Request ID</p>
@@ -324,19 +305,6 @@ export default function JobDetailPage() {
               </MagicCard>
             </div>
           </div>
-
-          {/* Compiled Prompt - Full width below */}
-          {job.compiled_prompt_string && (
-            <div className="mt-6 animate-in fade-in slide-in-from-bottom-4 duration-300 delay-300">
-              <MagicCard className="p-6">
-                <h2 className="text-base font-semibold text-foreground mb-1">Compiled Prompt</h2>
-                <p className="text-xs text-muted-foreground mb-4">The exact prompt sent to the AI model</p>
-                <pre className="bg-muted/30 p-4 rounded-xl overflow-auto text-xs font-mono text-muted-foreground whitespace-pre-wrap break-words border border-border/30 max-h-64">
-                  {job.compiled_prompt_string}
-                </pre>
-              </MagicCard>
-            </div>
-          )}
         </main>
 
         <Footer />
