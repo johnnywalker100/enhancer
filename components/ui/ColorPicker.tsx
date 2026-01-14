@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Pipette, ChevronDown, Plus } from 'lucide-react';
+import { ChevronDown, Plus } from 'lucide-react';
 import { HexColorPicker } from 'react-colorful';
 import { cn } from '@/lib/utils';
 
@@ -73,20 +73,6 @@ export function ColorPicker({ value, onChange, disabled, label }: ColorPickerPro
     if (isValidHex6(v)) onChange(v);
   };
 
-  const tryEyedropper = async () => {
-    // Browser EyeDropper API
-    const AnyWindow = window as any;
-    if (!AnyWindow.EyeDropper) return;
-
-    try {
-      const ed = new AnyWindow.EyeDropper();
-      const result = await ed.open();
-      if (result?.sRGBHex) setColor(result.sRGBHex);
-    } catch {
-      // user canceled
-    }
-  };
-
   const addCurrentColor = () => {
     if (!isValidHex6(value)) return;
     const normalized = value.toLowerCase();
@@ -149,7 +135,7 @@ export function ColorPicker({ value, onChange, disabled, label }: ColorPickerPro
           )}
         >
           {/* Picker row */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_170px]">
+          <div className="grid grid-cols-1 gap-4">
             <div className="rounded-xl border border-border p-3">
               <HexColorPicker color={isValidHex6(value) ? value : '#000000'} onChange={setColor} />
               {/* Make react-colorful fit your UI */}
@@ -194,27 +180,6 @@ export function ColorPicker({ value, onChange, disabled, label }: ColorPickerPro
                   Format: #RRGGBB
                 </div>
               </div>
-
-              {/* Eyedropper */}
-              <button
-                type="button"
-                onClick={tryEyedropper}
-                className={cn(
-                  'h-10 w-full rounded-xl border border-border bg-background',
-                  'flex items-center justify-center gap-2 text-sm font-medium',
-                  'hover:border-primary/60 transition',
-                  !(window as any)?.EyeDropper && 'opacity-60 cursor-not-allowed'
-                )}
-                disabled={!(typeof window !== 'undefined' && (window as any).EyeDropper)}
-                title={
-                  (typeof window !== 'undefined' && (window as any).EyeDropper)
-                    ? 'Pick from screen'
-                    : 'Eyedropper not supported in this browser'
-                }
-              >
-                <Pipette className="h-4 w-4" />
-                Eyedropper
-              </button>
             </div>
           </div>
 
@@ -237,7 +202,7 @@ export function ColorPicker({ value, onChange, disabled, label }: ColorPickerPro
               </button>
             </div>
 
-            <div className="grid grid-cols-9 gap-2">
+            <div className="grid grid-cols-6 sm:grid-cols-9 gap-2">
               {allColors.map((c, idx) => {
                 const active = value.toLowerCase() === c.toLowerCase();
                 return (
