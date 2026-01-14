@@ -94,6 +94,9 @@ export async function POST(request: NextRequest) {
       // Add aspect ratio if provided and not 'auto'
       if (aspectRatio && aspectRatio !== 'auto') {
         enhanceOptions.aspect_ratio = aspectRatio;
+        console.log('Setting aspect ratio to:', aspectRatio);
+      } else {
+        console.log('Using auto aspect ratio (original dimensions)');
       }
       
       const falResult = await enhanceImage(enhanceOptions);

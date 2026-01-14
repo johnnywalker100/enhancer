@@ -58,12 +58,19 @@ export async function enhanceImage(options: FalEnhanceOptions): Promise<FalEnhan
       image_urls: imageUrls,
       num_images: options.num_images || 1,
       output_format: options.output_format || 'png',
-      resolution: options.resolution || '2K',
     };
     
-    if (options.aspect_ratio) {
+    // Only add resolution if no aspect_ratio is specified
+    // When aspect_ratio is set, let fal.ai determine optimal resolution for that ratio
+    if (options.aspect_ratio && options.aspect_ratio !== 'auto') {
       input.aspect_ratio = options.aspect_ratio;
+      console.log('Aspect ratio set in fal.ai input:', options.aspect_ratio);
+    } else {
+      input.resolution = options.resolution || '2K';
+      console.log('Using resolution mode:', input.resolution);
     }
+    
+    console.log('Full fal.ai input:', JSON.stringify(input, null, 2));
     
     const result = await fal.subscribe('fal-ai/nano-banana-pro/edit', {
       input,
