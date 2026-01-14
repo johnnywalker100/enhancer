@@ -91,17 +91,10 @@ export async function POST(request: NextRequest) {
         ...compiled.fal_options,
       };
       
-      console.log('Received aspectRatio from frontend:', aspectRatio);
-      console.log('Current enhanceOptions before aspect ratio:', enhanceOptions);
-      
       // Add aspect ratio if provided and not 'auto'
-      // Important: Remove resolution when using aspect_ratio to avoid conflicts
       if (aspectRatio && aspectRatio !== 'auto') {
-        delete enhanceOptions.resolution; // Remove resolution to prevent conflict
         enhanceOptions.aspect_ratio = aspectRatio;
         console.log('Setting aspect ratio to:', aspectRatio);
-        console.log('Removed resolution parameter to avoid conflict');
-        console.log('Final enhanceOptions with aspect ratio:', enhanceOptions);
       } else {
         console.log('Using auto aspect ratio (original dimensions)');
       }

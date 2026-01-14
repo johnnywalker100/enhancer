@@ -16,6 +16,7 @@ export interface FalEnhanceOptions {
   output_format?: 'png' | 'jpeg' | 'webp';
   resolution?: '1K' | '2K' | '4K';
   aspect_ratio?: 'auto' | '21:9' | '16:9' | '3:2' | '4:3' | '5:4' | '1:1' | '4:5' | '3:4' | '2:3' | '9:16';
+  image_size?: string | { width: number; height: number };
   [key: string]: any;
 }
 
@@ -60,11 +61,27 @@ export async function enhanceImage(options: FalEnhanceOptions): Promise<FalEnhan
       output_format: options.output_format || 'png',
     };
     
-    // Only add resolution if no aspect_ratio is specified
-    // When aspect_ratio is set, let fal.ai determine optimal resolution for that ratio
+    // Map aspect_ratio to fal.ai image_size presets or custom dimensions
     if (options.aspect_ratio && options.aspect_ratio !== 'auto') {
-      input.aspect_ratio = options.aspect_ratio;
-      console.log('Aspect ratio set in fal.ai input:', options.aspect_ratio);
+      const aspectRatioMap: Record<string, string | { width: number; height: number }> = {
+        // Preset mappings (preferred)
+        '1:1': 'square_hd',           // 1328x1328
+        '4:3': 'landscape_4_3',       // 1365x1024
+        '16:9': 'landscape_16_9',     // 1820x1024
+        '3:4': 'portrait_4_3',        // 1024x1365
+        '9:16': 'portrait_16_9',      // 1024x1820
+        
+        // Custom dimensions for unsupported ratios
+        '21:9': { width: 2048, height: 878 },   // ultrawide
+        '5:4': { width: 1280, height: 1024 },   // classic monitor
+        '3:2': { width: 1536, height: 1024 },   // photography standard
+        '2:3': { width: 1024, height: 1536 },   // portrait photography
+        '4:5': { width: 1024, height: 1280 },   // Instagram portrait
+      };
+      
+      const imageSize = aspectRatioMap[options.aspect_ratio] || 'square_hd';
+      input.image_size = imageSize;
+      console.log('Image size set in fal.ai input:', JSON.stringify(imageSize), 'for aspect ratio:', options.aspect_ratio);
     } else {
       input.resolution = options.resolution || '2K';
       console.log('Using resolution mode:', input.resolution);
