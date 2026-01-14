@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import VariableControls from '@/components/VariableControls';
 import ImageUpload from '@/components/ImageUpload';
 import { BeforeAfterPreview } from '@/components/BeforeAfterPreview';
+import { ExampleShowcase } from '@/components/ExampleShowcase';
 import { Navigation, Footer } from '@/components/Navigation';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/Alert';
 import { getPreset } from '@/lib/presets';
@@ -162,7 +163,7 @@ export default function Home() {
             
             {/* Main Headline */}
             <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-foreground tracking-tight mb-6 md:mb-8 leading-[1.1]">
-              Turn phone photos into studio shots.
+              Turn any photos into studio shots.
             </h1>
             
             {/* Subtitle */}
@@ -189,25 +190,6 @@ export default function Home() {
                 See how it works
                 <span aria-hidden="true">→</span>
               </button>
-            </div>
-            
-            {/* Trust Indicators */}
-            <div className="border-t border-border/50 pt-8 md:pt-12">
-              <p className="text-sm text-muted-foreground mb-6">Trusted features</p>
-              <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 text-muted-foreground/60">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-5 h-5" />
-                  <span className="text-sm font-medium">Detail Preservation</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Lightbulb className="w-5 h-5" />
-                  <span className="text-sm font-medium">Studio Lighting</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5" />
-                  <span className="text-sm font-medium">No Distortions</span>
-                </div>
-              </div>
             </div>
           </div>
         </section>
@@ -267,6 +249,14 @@ export default function Home() {
               </div>
             </div>
           </section>
+
+          {/* Example Showcase Section */}
+          <ExampleShowcase
+            beforeImage="/uploads/example-before.jpeg"
+            afterImage="/uploads/example-after.jpeg"
+            title="See the transformation"
+            description="Real example showing how we enhance product photos"
+          />
 
           {/* Main Tool Section */}
           <section id="upload-section" className="container py-20 md:py-32">
@@ -385,6 +375,27 @@ export default function Home() {
                       </a>
                     </div>
                   )}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Trust Indicators */}
+          <section className="container py-20 md:py-32 border-t border-border/50">
+            <div className="max-w-5xl mx-auto text-center">
+              <p className="text-sm text-muted-foreground mb-6">Trusted features</p>
+              <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 text-muted-foreground/60">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5" />
+                  <span className="text-sm font-medium">Detail Preservation</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5" />
+                  <span className="text-sm font-medium">Studio Lighting</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5" />
+                  <span className="text-sm font-medium">No Distortions</span>
                 </div>
               </div>
             </div>
