@@ -61,26 +61,12 @@ export async function enhanceImage(options: FalEnhanceOptions): Promise<FalEnhan
       output_format: options.output_format || 'png',
     };
     
-    // Map aspect_ratio to fal.ai image_size with explicit dimensions
+    // Add aspect_ratio directly to the input (FAL API supports it directly)
     if (options.aspect_ratio && options.aspect_ratio !== 'auto') {
-      const aspectRatioMap: Record<string, { width: number; height: number }> = {
-        // Always use explicit dimensions for precise control
-        '1:1': { width: 1024, height: 1024 },    // square
-        '4:3': { width: 1365, height: 1024 },    // landscape
-        '16:9': { width: 1820, height: 1024 },   // widescreen
-        '3:4': { width: 1024, height: 1365 },    // portrait
-        '9:16': { width: 1024, height: 1820 },   // vertical video
-        '21:9': { width: 2048, height: 878 },    // ultrawide
-        '5:4': { width: 1280, height: 1024 },    // classic
-        '3:2': { width: 1536, height: 1024 },    // photo
-        '2:3': { width: 1024, height: 1536 },    // portrait photo
-        '4:5': { width: 1024, height: 1280 },    // Instagram portrait
-      };
-      
-      const imageSize = aspectRatioMap[options.aspect_ratio] || { width: 1024, height: 1024 };
-      input.image_size = imageSize;
-      console.log('Image size set in fal.ai input:', JSON.stringify(imageSize), 'for aspect ratio:', options.aspect_ratio);
+      input.aspect_ratio = options.aspect_ratio;
+      console.log('Setting aspect_ratio in fal.ai input:', options.aspect_ratio);
     } else {
+      // When no aspect ratio is specified, use resolution mode
       input.resolution = options.resolution || '2K';
       console.log('Using resolution mode:', input.resolution);
     }
