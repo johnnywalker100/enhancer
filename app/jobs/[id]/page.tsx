@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Job } from '@/lib/db';
@@ -18,13 +18,7 @@ export default function JobDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (jobId) {
-      fetchJob();
-    }
-  }, [jobId]);
-
-  const fetchJob = async () => {
+  const fetchJob = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/jobs/${jobId}`);
@@ -40,7 +34,13 @@ export default function JobDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [jobId]);
+
+  useEffect(() => {
+    if (jobId) {
+      fetchJob();
+    }
+  }, [jobId, fetchJob]);
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleString('en-US', {

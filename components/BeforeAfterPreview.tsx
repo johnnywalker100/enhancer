@@ -34,7 +34,7 @@ export function BeforeAfterPreview({ beforeUrl, afterUrl, onDownload, isProcessi
           </div>
           <p className="text-sm font-medium text-gray-900">No enhancement yet</p>
           <p className="text-xs text-gray-600 text-center max-w-xs">
-            Upload an image and click "Enhance Photo" to see the result here
+            Upload an image and click &quot;Enhance Photo&quot; to see the result here
           </p>
         </div>
       </div>
