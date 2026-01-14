@@ -14,14 +14,14 @@ interface ExampleShowcaseProps {
 export function ExampleShowcase({ 
   beforeImage, 
   afterImage, 
-  title = "See the transformation",
-  description = "Real example showing how we enhance product photos"
+  title = "Simple process.",
+  description = "Four steps to professional product photos"
 }: ExampleShowcaseProps) {
   const [activeTab, setActiveTab] = useState<'before' | 'after'>('before');
 
   return (
-    <section className="container py-20 md:py-32">
-      <div className="max-w-6xl mx-auto">
+    <section className="container py-20 md:py-32 bg-muted/30">
+      <div className="max-w-5xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground tracking-tight mb-4">
@@ -32,8 +32,56 @@ export function ExampleShowcase({
           </p>
         </div>
 
+        {/* Steps Grid */}
+        <div className="grid sm:grid-cols-2 gap-8 md:gap-12 mb-16 md:mb-20">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 text-primary font-bold text-xl md:text-2xl mb-4">
+              1
+            </div>
+            <h3 className="text-xl md:text-2xl font-semibold mb-2">Upload a photo</h3>
+            <p className="text-muted-foreground">
+              Drop in a phone photo. We keep all fine details intact.
+            </p>
+          </div>
+          
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 text-primary font-bold text-xl md:text-2xl mb-4">
+              2
+            </div>
+            <h3 className="text-xl md:text-2xl font-semibold mb-2">Choose the finish</h3>
+            <p className="text-muted-foreground">
+              Pick shadows and lighting style that fits your brand.
+            </p>
+          </div>
+          
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 text-primary font-bold text-xl md:text-2xl mb-4">
+              3
+            </div>
+            <h3 className="text-xl md:text-2xl font-semibold mb-2">Enhance</h3>
+            <p className="text-muted-foreground">
+              AI generates studio-quality lighting and background.
+            </p>
+          </div>
+          
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 text-primary font-bold text-xl md:text-2xl mb-4">
+              4
+            </div>
+            <h3 className="text-xl md:text-2xl font-semibold mb-2">Download</h3>
+            <p className="text-muted-foreground">
+              High-resolution PNG ready for any platform.
+            </p>
+          </div>
+        </div>
+
         {/* Example Container */}
         <div className="bg-white border border-border/50 rounded-3xl p-6 md:p-10 shadow-sm">
+          <div className="text-center mb-6">
+            <h3 className="text-xl md:text-2xl font-semibold mb-2">See it in action</h3>
+            <p className="text-sm text-muted-foreground">Real example of product photo enhancement</p>
+          </div>
+
           {/* Toggle Tabs */}
           <div className="max-w-md mx-auto mb-6">
             <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'before' | 'after')}>
@@ -48,8 +96,8 @@ export function ExampleShowcase({
             </Tabs>
           </div>
 
-          {/* Image Display */}
-          <div className="relative">
+          {/* Image Display - No forced aspect ratio, fits image size */}
+          <div className="relative flex justify-center">
             {/* Before Image */}
             <div
               className={cn(
@@ -57,11 +105,12 @@ export function ExampleShowcase({
                 activeTab === 'before' ? 'opacity-100' : 'opacity-0 absolute inset-0'
               )}
             >
-              <div className="aspect-[4/3] md:aspect-video rounded-2xl overflow-hidden bg-muted/20 border border-border/30">
+              <div className="flex justify-center items-center rounded-2xl overflow-hidden bg-muted/20 border border-border/30">
                 <img
                   src={beforeImage}
                   alt="Before enhancement - original product photo"
-                  className="w-full h-full object-contain"
+                  className="max-w-full h-auto object-contain rounded-2xl"
+                  style={{ maxHeight: '600px' }}
                 />
               </div>
               <div className="text-center mt-4">
@@ -78,11 +127,12 @@ export function ExampleShowcase({
                 activeTab === 'after' ? 'opacity-100' : 'opacity-0 absolute inset-0'
               )}
             >
-              <div className="aspect-[4/3] md:aspect-video rounded-2xl overflow-hidden bg-muted/20 border border-border/30 relative group">
+              <div className="flex justify-center items-center rounded-2xl overflow-hidden bg-muted/20 border border-border/30 relative group">
                 <img
                   src={afterImage}
                   alt="After enhancement - professional studio quality"
-                  className="w-full h-full object-contain"
+                  className="max-w-full h-auto object-contain rounded-2xl"
+                  style={{ maxHeight: '600px' }}
                 />
                 {/* Subtle glow effect */}
                 <div className="absolute inset-0 rounded-2xl ring-2 ring-primary/10 group-hover:ring-primary/20 transition-all duration-200" />
@@ -91,41 +141,6 @@ export function ExampleShowcase({
                 <p className="text-sm text-muted-foreground">
                   Enhanced with professional lighting
                 </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Feature Highlights */}
-          <div className="mt-8 md:mt-12 pt-8 md:pt-12 border-t border-border/30">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-              <div>
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-primary mb-3">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h4 className="font-semibold text-sm mb-1">Details Preserved</h4>
-                <p className="text-xs text-muted-foreground">All product details remain sharp</p>
-              </div>
-              
-              <div>
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-primary mb-3">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                </div>
-                <h4 className="font-semibold text-sm mb-1">Studio Lighting</h4>
-                <p className="text-xs text-muted-foreground">Professional grade lighting added</p>
-              </div>
-              
-              <div>
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 text-primary mb-3">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <h4 className="font-semibold text-sm mb-1">Clean Background</h4>
-                <p className="text-xs text-muted-foreground">Distractions removed automatically</p>
               </div>
             </div>
           </div>

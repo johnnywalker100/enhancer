@@ -191,7 +191,7 @@ export default function Home() {
               </button>
               <button
                 onClick={() => {
-                  document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' });
                 }}
                 className="w-full sm:w-auto px-8 py-4 text-base font-semibold rounded-full border-2 border-border text-foreground hover:bg-secondary/50 transition-colors duration-200 inline-flex items-center justify-center gap-2"
               >
@@ -202,68 +202,10 @@ export default function Home() {
           </div>
         </section>
 
-          {/* How It Works Section */}
-          <section id="how-it-works" className="container py-20 md:py-32 bg-muted/30">
-            <div className="max-w-5xl mx-auto">
-              <div className="text-center mb-16 md:mb-20">
-                <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground tracking-tight mb-4">
-                  Simple process.
-                </h2>
-                <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                  Four steps to professional product photos
-                </p>
-              </div>
-              
-              <div className="grid sm:grid-cols-2 gap-8 md:gap-12">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 text-primary font-bold text-xl md:text-2xl mb-4">
-                    1
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-semibold mb-2">Upload a photo</h3>
-                  <p className="text-muted-foreground">
-                    Drop in a phone photo. We keep all fine details intact.
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 text-primary font-bold text-xl md:text-2xl mb-4">
-                    2
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-semibold mb-2">Choose the finish</h3>
-                  <p className="text-muted-foreground">
-                    Pick shadows and lighting style that fits your brand.
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 text-primary font-bold text-xl md:text-2xl mb-4">
-                    3
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-semibold mb-2">Enhance</h3>
-                  <p className="text-muted-foreground">
-                    AI generates studio-quality lighting and background.
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 text-primary font-bold text-xl md:text-2xl mb-4">
-                    4
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-semibold mb-2">Download</h3>
-                  <p className="text-muted-foreground">
-                    High-resolution PNG ready for any platform.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Example Showcase Section */}
+          {/* How It Works & Example Showcase Section - Merged */}
           <ExampleShowcase
             beforeImage="/examples/example-before.png"
             afterImage="/examples/example-after.png"
-            title="See the transformation"
-            description="Real example showing how we enhance product photos"
           />
 
           {/* Main Tool Section */}
