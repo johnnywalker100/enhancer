@@ -71,7 +71,20 @@ export default function Home() {
         body: formData,
       });
 
-      const data = await response.json();
+      // Check if response has content before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(text || `Server returned ${response.status} ${response.statusText}`);
+      }
+
+      let data;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        throw new Error(`Invalid response from server: ${response.status} ${response.statusText}`);
+      }
 
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Enhancement failed');
