@@ -194,7 +194,7 @@ export default function Home() {
               </button>
               <button
                 onClick={() => {
-                  document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' });
+                  document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
                 }}
                 className="w-full sm:w-auto px-8 py-4 text-base font-semibold rounded-full border-2 border-border text-foreground hover:bg-secondary/50 transition-colors duration-200 inline-flex items-center justify-center gap-2"
               >
@@ -206,10 +206,12 @@ export default function Home() {
         </section>
 
           {/* How It Works & Example Showcase Section - Merged */}
-          <ExampleShowcase
-            beforeImage="/examples/example-before.png"
-            afterImage="/examples/example-after.png"
-          />
+          <div id="how-it-works">
+            <ExampleShowcase
+              beforeImage="/examples/example-before.png"
+              afterImage="/examples/example-after.png"
+            />
+          </div>
 
           {/* Main Tool Section */}
           <section id="upload-section" className="container py-20 md:py-32">
@@ -234,104 +236,109 @@ export default function Home() {
                 </div>
               )}
 
-              <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-                {/* Left Column: Controls */}
-                <div className="space-y-6">
-                  {/* Upload Card */}
-                  <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm">
-                    <div className="mb-6">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Upload className="w-5 h-5 text-primary" />
-                        <h3 className="text-lg font-semibold text-foreground">Upload Photo</h3>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        JPEG, PNG, or WebP • Max 10MB
-                      </p>
+              {/* Upload Section - Full Width */}
+              <div className="max-w-2xl mx-auto mb-8">
+                <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm">
+                  <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Upload className="w-5 h-5 text-primary" />
+                      <h3 className="text-lg font-semibold text-foreground">Upload Photo</h3>
                     </div>
-                    <ImageUpload
-                      onFileSelect={handleFileSelect}
-                      preview={filePreview}
-                      disabled={isProcessing}
-                    />
+                    <p className="text-sm text-muted-foreground">
+                      JPEG, PNG, or WebP • Max 10MB
+                    </p>
+                  </div>
+                  <ImageUpload
+                    onFileSelect={handleFileSelect}
+                    preview={filePreview}
+                    disabled={isProcessing}
+                  />
+                </div>
+              </div>
+
+              {/* Settings & Preview Section - Only show when image is selected */}
+              {selectedFile && (
+                <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+                  {/* Left Column: Settings & Actions */}
+                  <div className="space-y-6">
+                    {/* Settings Card */}
+                    {preset && (
+                      <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm">
+                        <VariableControls
+                          preset={preset}
+                          variables={variables}
+                          onChange={handleVariableChange}
+                          onReset={resetVariables}
+                          disabled={isProcessing}
+                          aspectRatio={aspectRatio}
+                          onAspectRatioChange={setAspectRatio}
+                        />
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="space-y-3">
+                      <button
+                        onClick={handleEnhance}
+                        disabled={!selectedFile || !preset || isProcessing}
+                        className={cn(
+                          "w-full h-14 text-base font-semibold rounded-full inline-flex items-center justify-center gap-2",
+                          "bg-black text-white hover:bg-black/90 transition-all duration-200 shadow-lg",
+                          (!selectedFile || !preset || isProcessing) && "opacity-50 cursor-not-allowed"
+                        )}
+                      >
+                        {isProcessing ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Enhancing...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-5 h-5" />
+                            Enhance Photo
+                          </>
+                        )}
+                      </button>
+
+                      {result && (
+                        <button
+                          onClick={handleReset}
+                          className="w-full h-12 text-base font-medium rounded-full border-2 border-border hover:bg-secondary/50 transition-colors duration-200 inline-flex items-center justify-center gap-2"
+                          disabled={isProcessing}
+                        >
+                          <RotateCcw className="w-4 h-4" />
+                          Create Another
+                        </button>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Settings Card */}
-                  {preset && (
-                    <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm">
-                      <VariableControls
-                        preset={preset}
-                        variables={variables}
-                        onChange={handleVariableChange}
-                        onReset={resetVariables}
-                        disabled={isProcessing}
-                        aspectRatio={aspectRatio}
-                        onAspectRatioChange={setAspectRatio}
-                      />
-                    </div>
-                  )}
-
-                  {/* Action Buttons */}
-                  <div className="space-y-3">
-                    <button
-                      onClick={handleEnhance}
-                      disabled={!selectedFile || !preset || isProcessing}
-                      className={cn(
-                        "w-full h-14 text-base font-semibold rounded-full inline-flex items-center justify-center gap-2",
-                        "bg-black text-white hover:bg-black/90 transition-all duration-200 shadow-lg",
-                        (!selectedFile || !preset || isProcessing) && "opacity-50 cursor-not-allowed"
-                      )}
-                    >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Enhancing...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-5 h-5" />
-                          Enhance Photo
-                        </>
-                      )}
-                    </button>
-
+                  {/* Right Column: Results */}
+                  <div ref={resultsRef}>
+                    <BeforeAfterPreview
+                      beforeUrl={filePreview}
+                      afterUrl={result?.outputUrl || null}
+                      onDownload={result ? handleDownload : undefined}
+                      isProcessing={isProcessing}
+                    />
+                    
+                    {/* Download Link */}
                     {result && (
-                      <button
-                        onClick={handleReset}
-                        className="w-full h-12 text-base font-medium rounded-full border-2 border-border hover:bg-secondary/50 transition-colors duration-200 inline-flex items-center justify-center gap-2"
-                        disabled={isProcessing}
-                      >
-                        <RotateCcw className="w-4 h-4" />
-                        Create Another
-                      </button>
+                      <div className="mt-6 text-center">
+                        <a
+                          href={result.outputUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1"
+                        >
+                          Open full resolution
+                          <span aria-hidden="true">→</span>
+                        </a>
+                      </div>
                     )}
                   </div>
                 </div>
-
-                {/* Right Column: Results */}
-                <div ref={resultsRef}>
-                  <BeforeAfterPreview
-                    beforeUrl={filePreview}
-                    afterUrl={result?.outputUrl || null}
-                    onDownload={result ? handleDownload : undefined}
-                    isProcessing={isProcessing}
-                  />
-                  
-                  {/* Download Link */}
-                  {result && (
-                    <div className="mt-6 text-center">
-                      <a
-                        href={result.outputUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1"
-                      >
-                        Open full resolution
-                        <span aria-hidden="true">→</span>
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
+              )}
             </div>
           </section>
 

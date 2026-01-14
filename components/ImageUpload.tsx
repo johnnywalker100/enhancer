@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, DragEvent } from 'react';
-import { Upload, RefreshCw, AlertCircle, Loader2 } from 'lucide-react';
+import { Upload, RefreshCw, AlertCircle, Loader2, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { compressImageIfNeeded, formatFileSize } from '@/lib/image-compression';
 
@@ -98,32 +98,39 @@ export default function ImageUpload({ onFileSelect, preview, disabled }: ImageUp
   
   const isDisabled = disabled || isCompressing;
 
-  // Show preview when image is selected
+  // Show compact selected state when image is selected
   if (preview) {
     return (
       <div className="space-y-3 animate-in fade-in duration-200">
         <div 
           className={cn(
-            "relative group cursor-pointer rounded-xl overflow-hidden bg-muted/20 border border-border/50",
-            "transition-all duration-200 hover:border-border",
+            "relative group cursor-pointer rounded-xl overflow-hidden bg-green-50 dark:bg-green-950/30 border-2 border-green-200 dark:border-green-800",
+            "transition-all duration-200 hover:border-green-300 dark:hover:border-green-700",
+            "p-6 text-center",
             isDisabled && "opacity-50 cursor-not-allowed"
           )}
           onClick={openFilePicker}
         >
-          <img 
-            src={preview} 
-            alt="Selected product" 
-            className="w-full max-h-64 object-contain"
-          />
-          
-          {/* Hover overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-center">
-              <span className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/20 backdrop-blur-sm text-white text-sm font-medium">
-                <RefreshCw className="w-4 h-4" />
-                Replace image
-              </span>
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
+            <div>
+              <p className="text-sm font-medium text-green-900 dark:text-green-100">
+                Image uploaded successfully
+              </p>
+              <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                See preview below
+              </p>
+            </div>
+            <button
+              type="button"
+              className="mt-2 flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-border hover:bg-secondary/50 transition-colors text-sm font-medium"
+              onClick={openFilePicker}
+            >
+              <RefreshCw className="w-4 h-4" />
+              Change image
+            </button>
           </div>
         </div>
         
@@ -132,10 +139,6 @@ export default function ImageUpload({ onFileSelect, preview, disabled }: ImageUp
             <span>✓ {compressionInfo}</span>
           </div>
         )}
-        
-        <p className="text-center text-sm text-muted-foreground">
-          Click image to replace
-        </p>
         
         <input
           id="file-input"
