@@ -1,117 +1,102 @@
-import Database from 'better-sqlite3';
-import path from 'path';
-import fs from 'fs';
-
-const dbPath = process.env.DATABASE_PATH || './data/jobs.db';
-const dbDir = path.dirname(dbPath);
-
-// Ensure directory exists
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir, { recursive: true });
-}
-
-const db = new Database(dbPath);
-
-// Initialize schema
-db.exec(`
-  CREATE TABLE IF NOT EXISTS jobs (
-    id TEXT PRIMARY KEY,
-    created_at INTEGER NOT NULL,
-    session_id TEXT NOT NULL,
-    preset_id TEXT NOT NULL,
-    input_image_url TEXT NOT NULL,
-    output_image_url TEXT,
-    status TEXT NOT NULL CHECK(status IN ('queued', 'processing', 'complete', 'failed')),
-    variables_json TEXT NOT NULL,
-    compiled_prompt_string TEXT NOT NULL,
-    fal_request_id TEXT,
-    error_message TEXT
-  );
-
-  CREATE INDEX IF NOT EXISTS idx_jobs_session ON jobs(session_id);
-  CREATE INDEX IF NOT EXISTS idx_jobs_created ON jobs(created_at DESC);
-`);
+import { supabaseAdmin } from './supabase';
 
 export interface Job {
   id: string;
-  created_at: number;
+  created_at: string; // ISO timestamp from Supabase
   session_id: string;
   preset_id: string;
   input_image_url: string;
   output_image_url: string | null;
   status: 'queued' | 'processing' | 'complete' | 'failed';
-  variables_json: string;
+  variables_json: any; // JSONB in Supabase, object in JS
   compiled_prompt_string: string;
   fal_request_id: string | null;
   error_message: string | null;
 }
 
 export const dbOperations = {
-  createJob: (job: Omit<Job, 'id' | 'created_at'>) => {
-    const id = require('uuid').v4();
-    const created_at = Date.now();
-    db.prepare(`
-      INSERT INTO jobs (id, created_at, session_id, preset_id, input_image_url, output_image_url, status, variables_json, compiled_prompt_string, fal_request_id, error_message)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      id,
-      created_at,
-      job.session_id,
-      job.preset_id,
-      job.input_image_url,
-      job.output_image_url,
-      job.status,
-      job.variables_json,
-      job.compiled_prompt_string,
-      job.fal_request_id,
-      job.error_message
-    );
-    return { id, created_at };
+  createJob: async (job: Omit<Job, 'id' | 'created_at'>) => {
+    const { data, error } = await supabaseAdmin
+      .from('jobs')
+      .insert({
+        session_id: job.session_id,
+        preset_id: job.preset_id,
+        input_image_url: job.input_image_url,
+        output_image_url: job.output_image_url,
+        status: job.status,
+        variables_json: job.variables_json, // Pass as object, Supabase handles JSONB
+        compiled_prompt_string: job.compiled_prompt_string,
+        fal_request_id: job.fal_request_id,
+        error_message: job.error_message,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to create job: ${error.message}`);
+    }
+
+    return { id: data.id, created_at: data.created_at };
   },
 
-  updateJob: (id: string, updates: Partial<Pick<Job, 'status' | 'output_image_url' | 'fal_request_id' | 'error_message'>>) => {
-    const fields: string[] = [];
-    const values: any[] = [];
+  updateJob: async (id: string, updates: Partial<Pick<Job, 'status' | 'output_image_url' | 'fal_request_id' | 'error_message'>>) => {
+    const updateData: any = {};
     
     if (updates.status !== undefined) {
-      fields.push('status = ?');
-      values.push(updates.status);
+      updateData.status = updates.status;
     }
     if (updates.output_image_url !== undefined) {
-      fields.push('output_image_url = ?');
-      values.push(updates.output_image_url);
+      updateData.output_image_url = updates.output_image_url;
     }
     if (updates.fal_request_id !== undefined) {
-      fields.push('fal_request_id = ?');
-      values.push(updates.fal_request_id);
+      updateData.fal_request_id = updates.fal_request_id;
     }
     if (updates.error_message !== undefined) {
-      fields.push('error_message = ?');
-      values.push(updates.error_message);
+      updateData.error_message = updates.error_message;
     }
     
-    if (fields.length === 0) return;
+    if (Object.keys(updateData).length === 0) return;
     
-    values.push(id);
-    db.prepare(`UPDATE jobs SET ${fields.join(', ')} WHERE id = ?`).run(...values);
+    const { error } = await supabaseAdmin
+      .from('jobs')
+      .update(updateData)
+      .eq('id', id);
+
+    if (error) {
+      throw new Error(`Failed to update job: ${error.message}`);
+    }
   },
 
-  getJob: (id: string, sessionId: string): Job | null => {
-    const row = db.prepare('SELECT * FROM jobs WHERE id = ? AND session_id = ?').get(id, sessionId) as any;
-    if (!row) return null;
-    return {
-      ...row,
-      created_at: row.created_at,
-    };
+  getJob: async (id: string, sessionId: string): Promise<Job | null> => {
+    const { data, error } = await supabaseAdmin
+      .from('jobs')
+      .select('*')
+      .eq('id', id)
+      .eq('session_id', sessionId)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // Not found
+        return null;
+      }
+      throw new Error(`Failed to get job: ${error.message}`);
+    }
+
+    return data as Job;
   },
 
-  getJobsBySession: (sessionId: string): Job[] => {
-    const rows = db.prepare('SELECT * FROM jobs WHERE session_id = ? ORDER BY created_at DESC').all(sessionId) as any[];
-    return rows.map(row => ({
-      ...row,
-      created_at: row.created_at,
-    }));
+  getJobsBySession: async (sessionId: string): Promise<Job[]> => {
+    const { data, error } = await supabaseAdmin
+      .from('jobs')
+      .select('*')
+      .eq('session_id', sessionId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw new Error(`Failed to get jobs: ${error.message}`);
+    }
+
+    return (data || []) as Job[];
   },
 };
-
-export default db;

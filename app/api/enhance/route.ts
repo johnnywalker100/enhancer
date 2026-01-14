@@ -5,6 +5,7 @@ import { injectVariables, validateVariables } from '@/lib/variable-injection';
 import { compilePrompt } from '@/lib/compiler';
 import { enhanceImage } from '@/lib/fal';
 import { getOrCreateSessionId, setSessionCookie } from '@/lib/session';
+import { dbOperations } from '@/lib/db';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -66,6 +67,19 @@ export async function POST(request: NextRequest) {
     // Validate and read the uploaded file (no filesystem operations)
     const validatedFile = await validateAndReadFile(imageFile);
     
+    // Create job record in Supabase
+    const { id: jobId } = await dbOperations.createJob({
+      session_id: sessionId,
+      preset_id: presetId,
+      input_image_url: imageFile.name, // Store filename for reference
+      output_image_url: null,
+      status: 'processing',
+      variables_json: variables, // Store as object (JSONB)
+      compiled_prompt_string: compiled.prompt_string,
+      fal_request_id: null,
+      error_message: null,
+    });
+    
     // For MVP: synchronous processing (can upgrade to async/queue later)
     try {
       // Upload image directly to fal.ai storage (no local file system needed)
@@ -83,8 +97,16 @@ export async function POST(request: NextRequest) {
         throw new Error('No output image URL returned from fal.ai');
       }
       
+      // Update job with success
+      await dbOperations.updateJob(jobId, {
+        status: 'complete',
+        output_image_url: outputImageUrl,
+        fal_request_id: falResult.request_id || null,
+      });
+      
       // Return response
       const response = NextResponse.json({
+        job_id: jobId,
         output_url: outputImageUrl,
         status: 'complete',
         request_id: falResult.request_id,
@@ -99,7 +121,14 @@ export async function POST(request: NextRequest) {
       console.error('Enhancement error:', errorMessage);
       console.error('Full error:', error);
       
+      // Update job with failure
+      await dbOperations.updateJob(jobId, {
+        status: 'failed',
+        error_message: errorMessage,
+      });
+      
       return NextResponse.json({
+        job_id: jobId,
         error: 'Enhancement failed',
         message: errorMessage,
         details: error?.stack || error,

@@ -36,7 +36,7 @@ export default function JobsPage() {
     }
   };
 
-  const formatDate = (timestamp: number) => {
+  const formatDate = (timestamp: string | number) => {
     return new Date(timestamp).toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',

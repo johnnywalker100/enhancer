@@ -64,7 +64,7 @@ export default function JobDetailPage() {
     }
   }, [jobId, fetchJob]);
 
-  const formatDate = (timestamp: number) => {
+  const formatDate = (timestamp: string | number) => {
     return new Date(timestamp).toLocaleString('en-US', {
       weekday: 'short',
       month: 'long',

@@ -13,7 +13,7 @@ export async function GET(
     const sessionId = getOrCreateSessionId(request);
     const jobId = params.id;
     
-    const job = dbOperations.getJob(jobId, sessionId);
+    const job = await dbOperations.getJob(jobId, sessionId);
     
     if (!job) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });

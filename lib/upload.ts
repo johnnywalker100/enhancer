@@ -1,6 +1,8 @@
 // Upload validation utilities (no filesystem operations for Vercel compatibility)
 
-const maxFileSize = 10 * 1024 * 1024; // 10MB
+// Vercel serverless functions have a ~4.5MB body limit on Hobby plan
+// We set this slightly lower to account for form data overhead
+const maxFileSize = 4 * 1024 * 1024; // 4MB
 
 export interface ValidatedFile {
   buffer: Buffer;
@@ -22,7 +24,9 @@ export async function validateAndReadFile(file: File): Promise<ValidatedFile> {
   
   // Validate file size
   if (file.size > maxFileSize) {
-    throw new Error(`File too large: ${file.size} bytes. Max: ${maxFileSize} bytes`);
+    const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+    const maxMB = (maxFileSize / (1024 * 1024)).toFixed(0);
+    throw new Error(`File too large (${sizeMB}MB). Maximum allowed is ${maxMB}MB. Please compress or resize your image.`);
   }
   
   // Read file into buffer

@@ -15,7 +15,7 @@ A full-stack SaaS application that enhances product photos using AI-powered edit
 
 - **Next.js 14** (App Router)
 - **TypeScript**
-- **SQLite** (via better-sqlite3) for job storage
+- **Supabase** (PostgreSQL) for job storage and file uploads
 - **fal.ai** for image enhancement
 - **React** for UI components
 
@@ -29,16 +29,19 @@ A full-stack SaaS application that enhances product photos using AI-powered edit
 2. **Set up environment variables:**
    Create a `.env.local` file:
    ```env
+   # Supabase
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   
+   # fal.ai
    FAL_KEY=your_fal_api_key_here
-   DATABASE_PATH=./data/jobs.db
-   UPLOAD_DIR=./public/uploads
-   NEXT_PUBLIC_BASE_URL=http://localhost:3000
    ```
 
-3. **Create necessary directories:**
-   ```bash
-   mkdir -p public/uploads data
-   ```
+3. **Set up Supabase:**
+   - Create a Supabase project at https://supabase.com
+   - Run the SQL schema from `supabase-schema.sql` in your Supabase SQL Editor
+   - Create a storage bucket named `uploads` (optional, for future file storage)
 
 4. **Run the development server:**
    ```bash
@@ -63,7 +66,8 @@ nano/
 │   ├── ImageUpload.tsx           # File upload component
 │   └── VariableControls.tsx      # Dynamic variable form generator
 ├── lib/
-│   ├── db.ts                     # Database operations
+│   ├── db.ts                     # Database operations (Supabase)
+│   ├── supabase.ts               # Supabase client setup
 │   ├── presets.ts                # ⭐ YOUR PRESET CONFIGURATIONS GO HERE
 │   ├── variable-injection.ts     # Variable injection logic
 │   ├── compiler.ts               # JSON-to-fal prompt compiler
@@ -216,25 +220,27 @@ Returns a specific job's details.
 
 ## Database Schema
 
-Jobs are stored in SQLite with the following fields:
-- `id`: UUID
-- `created_at`: Timestamp
+Jobs are stored in Supabase (PostgreSQL) with the following fields:
+- `id`: UUID (auto-generated)
+- `created_at`: Timestamptz (auto-generated)
 - `session_id`: Anonymous session identifier
 - `preset_id`: Preset used
 - `input_image_url`: Local path to uploaded image
 - `output_image_url`: fal.ai returned URL
 - `status`: queued | processing | complete | failed
-- `variables_json`: JSON string of user-selected variables
+- `variables_json`: JSONB object of user-selected variables
 - `compiled_prompt_string`: Final prompt sent to fal.ai
 - `fal_request_id`: fal.ai request ID
 - `error_message`: Error message if failed
 
+See `supabase-schema.sql` for the complete schema with indexes and Row Level Security policies.
+
 ## Production Considerations
 
-1. **File Storage**: Currently uses local filesystem. For production, upload to S3/Cloudflare R2/etc. before calling fal.ai
-2. **Database**: SQLite is fine for MVP. Consider PostgreSQL for production
+1. **File Storage**: Currently uses local filesystem. Migrate to Supabase Storage or S3/Cloudflare R2
+2. **Database**: ✅ Now using Supabase PostgreSQL (production-ready)
 3. **Async Processing**: Currently synchronous. Consider queue system (Bull, BullMQ) for production
-4. **Session Management**: Currently cookie-based. Consider user authentication
+4. **Session Management**: Currently cookie-based. Upgrade to Supabase Auth for user accounts
 5. **Rate Limiting**: Add rate limiting to API endpoints
 6. **Error Handling**: Enhance error messages and retry logic
 7. **Image Optimization**: Add image compression/resizing before upload

@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const sessionId = getOrCreateSessionId(request);
-    const jobs = dbOperations.getJobsBySession(sessionId);
+    const jobs = await dbOperations.getJobsBySession(sessionId);
     
     const response = NextResponse.json({ jobs });
     response.headers.set('Set-Cookie', setSessionCookie(sessionId));
