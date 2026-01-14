@@ -1,22 +1,15 @@
-import fs from 'fs';
-import path from 'path';
+// Upload validation utilities (no filesystem operations for Vercel compatibility)
 
-const uploadDir = process.env.UPLOAD_DIR || './public/uploads';
 const maxFileSize = 10 * 1024 * 1024; // 10MB
 
-// Ensure upload directory exists
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-export interface UploadedFile {
-  filepath: string;
+export interface ValidatedFile {
+  buffer: Buffer;
   originalFilename: string;
   mimetype: string;
   size: number;
 }
 
-export async function handleFileUpload(file: File): Promise<UploadedFile> {
+export async function validateAndReadFile(file: File): Promise<ValidatedFile> {
   if (!file) {
     throw new Error('No file uploaded');
   }
@@ -32,23 +25,14 @@ export async function handleFileUpload(file: File): Promise<UploadedFile> {
     throw new Error(`File too large: ${file.size} bytes. Max: ${maxFileSize} bytes`);
   }
   
-  // Save file
+  // Read file into buffer
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
-  const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-  const filepath = path.join(uploadDir, filename);
-  
-  fs.writeFileSync(filepath, buffer);
   
   return {
-    filepath,
+    buffer,
     originalFilename: file.name,
     mimetype: file.type,
     size: file.size,
   };
-}
-
-export function getPublicUrl(filepath: string): string {
-  const filename = path.basename(filepath);
-  return `/uploads/${filename}`;
 }

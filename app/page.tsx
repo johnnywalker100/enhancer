@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import Link from 'next/link';
 import VariableControls from '@/components/VariableControls';
 import ImageUpload from '@/components/ImageUpload';
 import { BeforeAfterPreview } from '@/components/BeforeAfterPreview';
@@ -20,7 +19,7 @@ export default function Home() {
   const [variables, setVariables] = useState<VariableValues>({});
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{ jobId: string; outputUrl: string } | null>(null);
+  const [result, setResult] = useState<{ outputUrl: string; requestId?: string } | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // Initialize variables with defaults when preset loads
@@ -95,8 +94,8 @@ export default function Home() {
       const data = await response.json();
 
       setResult({
-        jobId: data.job_id,
         outputUrl: data.output_url,
+        requestId: data.request_id,
       });
 
       // Scroll to results on mobile
@@ -233,15 +232,17 @@ export default function Home() {
               isProcessing={isProcessing}
             />
             
-            {/* Job Link */}
+            {/* Download Link */}
             {result && (
               <div className="mt-4 text-center">
-                <Link
-                  href={`/jobs/${result.jobId}`}
+                <a
+                  href={result.outputUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-sm text-primary hover:underline"
                 >
-                  View job details →
-                </Link>
+                  Download full resolution →
+                </a>
               </div>
             )}
           </div>

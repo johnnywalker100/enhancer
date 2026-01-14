@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { handleFileUpload, getPublicUrl } from '@/lib/upload';
+import { validateAndReadFile } from '@/lib/upload';
 import { getPreset } from '@/lib/presets';
 import { injectVariables, validateVariables } from '@/lib/variable-injection';
 import { compilePrompt } from '@/lib/compiler';
 import { enhanceImage } from '@/lib/fal';
-import { dbOperations } from '@/lib/db';
 import { getOrCreateSessionId, setSessionCookie } from '@/lib/session';
 
 export const runtime = 'nodejs';
@@ -63,33 +62,16 @@ export async function POST(request: NextRequest) {
     // Fal options are fixed: resolution=1K, num_images=1, output_format=png
     // (set in preset.fal_defaults, no variables needed)
     
-    // Save uploaded file
-    const uploadedFile = await handleFileUpload(imageFile);
-    const inputImageUrl = getPublicUrl(uploadedFile.filepath);
-    
-    // Create job record (status: queued)
-    const { id: jobId } = dbOperations.createJob({
-      session_id: sessionId,
-      preset_id: presetId,
-      input_image_url: inputImageUrl,
-      output_image_url: null,
-      status: 'queued',
-      variables_json: JSON.stringify(variables),
-      compiled_prompt_string: compiled.prompt_string,
-      fal_request_id: null,
-      error_message: null,
-    });
-    
-    // Update status to processing
-    dbOperations.updateJob(jobId, { status: 'processing' });
+    // Validate and read the uploaded file (no filesystem operations)
+    const validatedFile = await validateAndReadFile(imageFile);
     
     // For MVP: synchronous processing (can upgrade to async/queue later)
     try {
-      // Upload image to fal.ai storage (they can't access localhost URLs)
-      // Pass the local file path so fal client can upload it
+      // Upload image directly to fal.ai storage (no local file system needed)
       const falResult = await enhanceImage({
         prompt: compiled.prompt_string,
-        image_filepath: uploadedFile.filepath, // Upload via fal.storage.upload()
+        image_buffer: validatedFile.buffer,
+        image_mimetype: validatedFile.mimetype,
         ...compiled.fal_options,
       });
       
@@ -100,18 +82,11 @@ export async function POST(request: NextRequest) {
         throw new Error('No output image URL returned from fal.ai');
       }
       
-      // Update job with result
-      dbOperations.updateJob(jobId, {
-        status: 'complete',
-        output_image_url: outputImageUrl,
-        fal_request_id: falResult.request_id,
-      });
-      
       // Return response
       const response = NextResponse.json({
-        job_id: jobId,
         output_url: outputImageUrl,
         status: 'complete',
+        request_id: falResult.request_id,
       });
       
       // Set session cookie if needed
@@ -119,20 +94,13 @@ export async function POST(request: NextRequest) {
       
       return response;
     } catch (error: any) {
-      // Update job with error
       const errorMessage = error?.message || error?.toString() || 'Unknown error';
       console.error('Enhancement error:', errorMessage);
       console.error('Full error:', error);
       
-      dbOperations.updateJob(jobId, {
-        status: 'failed',
-        error_message: errorMessage,
-      });
-      
       return NextResponse.json({
         error: 'Enhancement failed',
         message: errorMessage,
-        job_id: jobId,
         details: error?.stack || error,
       }, { status: 500 });
     }

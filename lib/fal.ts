@@ -1,5 +1,4 @@
 import { fal } from '@fal-ai/client';
-import fs from 'fs';
 
 // Initialize fal client
 if (process.env.FAL_KEY) {
@@ -11,7 +10,8 @@ if (process.env.FAL_KEY) {
 export interface FalEnhanceOptions {
   prompt: string;
   image_urls?: string[];
-  image_filepath?: string; // Local file path to upload
+  image_buffer?: Buffer; // In-memory buffer to upload
+  image_mimetype?: string;
   num_images?: number;
   output_format?: 'png' | 'jpeg' | 'webp';
   resolution?: '1K' | '2K' | '4K';
@@ -33,20 +33,19 @@ export async function enhanceImage(options: FalEnhanceOptions): Promise<FalEnhan
   }
   
   try {
-    // Upload image to fal.ai storage if local file path provided
+    // Upload image to fal.ai storage if buffer provided
     let imageUrls = options.image_urls || [];
-    if (options.image_filepath) {
+    if (options.image_buffer) {
       console.log('Uploading image to fal.ai storage...');
-      const fileBuffer = fs.readFileSync(options.image_filepath);
-      // Use Blob for Node.js compatibility (Node 18+)
-      const blob = new Blob([fileBuffer], { type: 'image/png' });
+      const mimetype = options.image_mimetype || 'image/png';
+      const blob = new Blob([options.image_buffer], { type: mimetype });
       const uploadedUrl = await fal.storage.upload(blob);
       console.log('Image uploaded to:', uploadedUrl);
       imageUrls = [uploadedUrl];
     }
     
     if (imageUrls.length === 0) {
-      throw new Error('No image URLs provided and no file path specified');
+      throw new Error('No image URLs provided and no buffer specified');
     }
     
     console.log('Calling fal.ai with prompt:', options.prompt.substring(0, 100) + '...');

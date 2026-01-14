@@ -40,10 +40,6 @@ export function Footer() {
   return (
     <footer className="border-t border-gray-200 bg-white/50 mt-auto">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <p className="text-xs text-gray-600 text-center">
-          Powered by{' '}
-          <span className="font-medium">Nano Banana Pro</span>
-        </p>
       </div>
     </footer>
   );
