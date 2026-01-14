@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import * as React from 'react';
+import { Pipette, ChevronDown } from 'lucide-react';
+import { HexColorPicker } from 'react-colorful';
 import { cn } from '@/lib/utils';
-import { Pipette } from 'lucide-react';
 
 interface ColorPickerProps {
   value: string;
@@ -11,151 +12,217 @@ interface ColorPickerProps {
   label?: string;
 }
 
-// Preset colors to display
 const PRESET_COLORS = [
-  '#ffffff', // white
-  '#f5f5f5', // light gray
-  '#e0e0e0', // gray
-  '#c0c0c0', // medium gray
-  '#4397EB', // blue
-  '#2563eb', // darker blue
-  '#000000', // black
-  '#16a34a', // green
-  '#dc2626', // red
+  '#ffffff',
+  '#f5f5f5',
+  '#e0e0e0',
+  '#c0c0c0',
+  '#4397EB',
+  '#2563eb',
+  '#111827',
+  '#16a34a',
+  '#dc2626',
 ];
 
+function normalizeHex(input: string) {
+  let v = input.trim();
+  if (!v.startsWith('#')) v = `#${v}`;
+  return v;
+}
+function isValidHex6(v: string) {
+  return /^#[0-9A-Fa-f]{6}$/.test(v);
+}
+
 export function ColorPicker({ value, onChange, disabled, label }: ColorPickerProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [hexInput, setHexInput] = useState(value);
-  const pickerRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = React.useState(false);
+  const [draft, setDraft] = React.useState(value);
+  const ref = React.useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setHexInput(value);
-  }, [value]);
+  React.useEffect(() => setDraft(value), [value]);
 
-  // Close picker when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
+  React.useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (!ref.current) return;
+      if (!ref.current.contains(e.target as Node)) setOpen(false);
     };
+    if (open) document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [open]);
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isOpen]);
-
-  const handleHexChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setHexInput(newValue);
-    
-    // Validate hex color
-    if (/^#[0-9A-F]{6}$/i.test(newValue)) {
-      onChange(newValue);
-    }
+  const setColor = (hex: string) => {
+    const v = normalizeHex(hex);
+    setDraft(v);
+    if (isValidHex6(v)) onChange(v);
   };
 
-  const handlePresetClick = (color: string) => {
-    onChange(color);
-    setHexInput(color);
+  const tryEyedropper = async () => {
+    // Browser EyeDropper API
+    const AnyWindow = window as any;
+    if (!AnyWindow.EyeDropper) return;
+
+    try {
+      const ed = new AnyWindow.EyeDropper();
+      const result = await ed.open();
+      if (result?.sRGBHex) setColor(result.sRGBHex);
+    } catch {
+      // user canceled
+    }
   };
 
   return (
-    <div className="relative" ref={pickerRef}>
-      {/* Color Display Button */}
+    <div className="w-full" ref={ref}>
+      {label ? (
+        <div className="mb-2 text-sm font-medium text-foreground">{label}</div>
+      ) : null}
+
+      {/* Trigger */}
       <button
         type="button"
-        onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
+        onClick={() => !disabled && setOpen((v) => !v)}
         className={cn(
-          "w-full h-12 rounded-xl border-2 border-border flex items-center gap-3 px-4",
-          "transition-all duration-200",
-          "hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20",
-          disabled && "opacity-50 cursor-not-allowed",
-          isOpen && "border-primary ring-2 ring-primary/20"
+          'w-full h-11 rounded-xl border bg-background px-3',
+          'flex items-center gap-3',
+          'transition focus:outline-none focus:ring-2 focus:ring-primary/20',
+          open ? 'border-primary ring-2 ring-primary/10' : 'border-border hover:border-primary/60',
+          disabled && 'opacity-50 cursor-not-allowed'
         )}
       >
-        {/* Color Swatch */}
-        <div 
-          className="w-8 h-8 rounded-lg border-2 border-border shadow-sm flex-shrink-0"
+        <span
+          className="h-6 w-6 rounded-md border border-border shadow-sm"
           style={{ backgroundColor: value }}
         />
-        
-        {/* Color Value */}
-        <span className="text-sm font-medium text-foreground flex-1 text-left">
+        <span className="flex-1 text-left text-sm font-medium text-foreground">
           {value.toUpperCase()}
         </span>
-        
-        {/* Pipette Icon */}
-        <Pipette className="w-4 h-4 text-muted-foreground" />
+        <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition', open && 'rotate-180')} />
       </button>
 
-      {/* Dropdown Picker */}
-      {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-border rounded-2xl shadow-xl z-50 p-4 animate-in fade-in slide-in-from-top-2 duration-200">
-          {/* Hex Input */}
-          <div className="mb-4">
-            <label className="text-xs font-medium text-muted-foreground block mb-2">
-              Hex Color
-            </label>
-            <input
-              type="text"
-              value={hexInput}
-              onChange={handleHexChange}
-              className={cn(
-                "w-full h-10 px-3 rounded-lg border-2 border-border",
-                "text-sm font-mono text-foreground",
-                "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20",
-                "transition-all duration-200"
-              )}
-              placeholder="#000000"
-              maxLength={7}
-            />
-          </div>
-
-          {/* Native Color Picker */}
-          <div className="mb-4">
-            <label className="text-xs font-medium text-muted-foreground block mb-2">
-              Pick a Color
-            </label>
-            <input
-              type="color"
-              value={value}
-              onChange={(e) => {
-                onChange(e.target.value);
-                setHexInput(e.target.value);
-              }}
-              className="w-full h-32 rounded-lg cursor-pointer border-2 border-border"
-            />
-          </div>
-
-          {/* Preset Colors */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-medium text-muted-foreground">
-                Saved Colors
-              </label>
+      {/* Popover */}
+      {open && (
+        <div
+          className={cn(
+            'mt-2 w-full rounded-2xl border border-border bg-background shadow-xl',
+            'p-4',
+            'animate-in fade-in slide-in-from-top-2 duration-150'
+          )}
+        >
+          {/* Picker row */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_170px]">
+            <div className="rounded-xl border border-border p-3">
+              <HexColorPicker color={isValidHex6(value) ? value : '#000000'} onChange={setColor} />
+              {/* Make react-colorful fit your UI */}
+              <style jsx global>{`
+                .react-colorful {
+                  width: 100%;
+                  height: 190px;
+                }
+                .react-colorful__saturation {
+                  border-radius: 12px;
+                }
+                .react-colorful__hue {
+                  height: 14px;
+                  border-radius: 9999px;
+                  margin-top: 12px;
+                }
+                .react-colorful__pointer {
+                  width: 16px;
+                  height: 16px;
+                  border: 2px solid white;
+                  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+                }
+              `}</style>
             </div>
-            <div className="grid grid-cols-9 gap-2">
-              {PRESET_COLORS.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  onClick={() => handlePresetClick(color)}
+
+            <div className="space-y-3">
+              {/* Hex input */}
+              <div>
+                <div className="mb-1 text-xs font-medium text-muted-foreground">Hex</div>
+                <input
+                  value={draft}
+                  onChange={(e) => setColor(e.target.value)}
+                  placeholder="#000000"
+                  maxLength={7}
                   className={cn(
-                    "w-full aspect-square rounded-lg border-2 transition-all duration-200",
-                    "hover:scale-110 hover:shadow-md",
-                    value.toLowerCase() === color.toLowerCase() 
-                      ? "border-primary ring-2 ring-primary/20" 
-                      : "border-border"
+                    'h-10 w-full rounded-xl border border-border bg-background px-3',
+                    'text-sm font-mono text-foreground',
+                    'focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary'
                   )}
-                  style={{ backgroundColor: color }}
-                  title={color}
                 />
-              ))}
+                <div className="mt-1 text-[11px] text-muted-foreground">
+                  Format: #RRGGBB
+                </div>
+              </div>
+
+              {/* Eyedropper */}
+              <button
+                type="button"
+                onClick={tryEyedropper}
+                className={cn(
+                  'h-10 w-full rounded-xl border border-border bg-background',
+                  'flex items-center justify-center gap-2 text-sm font-medium',
+                  'hover:border-primary/60 transition',
+                  !(window as any)?.EyeDropper && 'opacity-60 cursor-not-allowed'
+                )}
+                disabled={!(typeof window !== 'undefined' && (window as any).EyeDropper)}
+                title={
+                  (typeof window !== 'undefined' && (window as any).EyeDropper)
+                    ? 'Pick from screen'
+                    : 'Eyedropper not supported in this browser'
+                }
+              >
+                <Pipette className="h-4 w-4" />
+                Eyedropper
+              </button>
             </div>
+          </div>
+
+          {/* Presets */}
+          <div className="mt-4">
+            <div className="mb-2 flex items-center justify-between">
+              <div className="text-xs font-medium text-muted-foreground">Saved colors</div>
+              <button
+                type="button"
+                className="text-xs font-medium text-primary hover:opacity-80"
+                onClick={() => setColor('#4397EB')}
+              >
+                Reset
+              </button>
+            </div>
+
+            <div className="grid grid-cols-9 gap-2">
+              {PRESET_COLORS.map((c) => {
+                const active = value.toLowerCase() === c.toLowerCase();
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setColor(c)}
+                    className={cn(
+                      'aspect-square w-full rounded-lg border transition',
+                      'hover:scale-[1.06] hover:shadow-sm',
+                      active ? 'border-primary ring-2 ring-primary/20' : 'border-border'
+                    )}
+                    style={{ backgroundColor: c }}
+                    title={c}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="mt-4 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              className="h-10 rounded-xl px-4 text-sm font-medium text-foreground hover:bg-muted transition"
+              onClick={() => {
+                setDraft(value);
+                setOpen(false);
+              }}
+            >
+              Done
+            </button>
           </div>
         </div>
       )}
