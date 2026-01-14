@@ -320,21 +320,6 @@ export default function Home() {
                         onDownload={result ? handleDownload : undefined}
                         isProcessing={isProcessing}
                       />
-                      
-                      {/* Download Link */}
-                      {result && (
-                        <div className="mt-6 text-center">
-                          <a
-                            href={result.outputUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1"
-                          >
-                            Open full resolution
-                            <span aria-hidden="true">→</span>
-                          </a>
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>
