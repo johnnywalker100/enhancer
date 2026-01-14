@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { Preset, VariableValues, VariableSchema } from '@/lib/types';
 import { Switch } from './ui/Switch';
 import { Select } from './ui/Select';
@@ -119,6 +120,9 @@ export default function VariableControls({
     onChange(key, checked);
   };
 
+  // Track if we've shown the Look & Finish header
+  let shownLookFinishHeader = false;
+
   const renderControl = (varSchema: VariableSchema, index: number) => {
     const value = variables[varSchema.key] ?? varSchema.default;
     const key = varSchema.key;
@@ -149,36 +153,53 @@ export default function VariableControls({
     }
 
     if (varSchema.type === 'boolean') {
+      const showHeader = !shownLookFinishHeader;
+      shownLookFinishHeader = true;
+      
       return (
-        <div 
-          key={key} 
-          className="py-4 border-b border-border/40 last:border-0 last:pb-0 first:pt-0 animate-in fade-in duration-200"
-          style={{ animationDelay: `${index * 50}ms` }}
-        >
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <label 
-                htmlFor={key} 
-                className={cn(
-                  "text-sm font-medium cursor-pointer leading-tight transition-colors duration-200",
-                  value ? "text-foreground" : "text-foreground/80"
-                )}
-              >
-                {settingInfo.label}
-              </label>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                {settingInfo.helper}
+        <React.Fragment key={key}>
+          {showHeader && (
+            <div className="pt-1 pb-4">
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-primary/10">
+                  <Sparkles className="w-3.5 h-3.5 text-primary" />
+                </div>
+                <h3 className="text-base font-semibold text-foreground">Look & Finish</h3>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Lighting & background only. Product shape and branding are preserved.
               </p>
             </div>
-            <Switch
-              id={key}
-              checked={value ?? varSchema.default ?? false}
-              onCheckedChange={(checked) => handleToggle(key, checked)}
-              disabled={disabled}
-              aria-label={settingInfo.label}
-            />
+          )}
+          <div 
+            className="py-4 border-b border-border/40 last:border-0 last:pb-0 first:pt-0 animate-in fade-in duration-200"
+            style={{ animationDelay: `${index * 50}ms` }}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <label 
+                  htmlFor={key} 
+                  className={cn(
+                    "text-sm font-medium cursor-pointer leading-tight transition-colors duration-200",
+                    value ? "text-foreground" : "text-foreground/80"
+                  )}
+                >
+                  {settingInfo.label}
+                </label>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  {settingInfo.helper}
+                </p>
+              </div>
+              <Switch
+                id={key}
+                checked={value ?? varSchema.default ?? false}
+                onCheckedChange={(checked) => handleToggle(key, checked)}
+                disabled={disabled}
+                aria-label={settingInfo.label}
+              />
+            </div>
           </div>
-        </div>
+        </React.Fragment>
       );
     }
 
@@ -187,19 +208,6 @@ export default function VariableControls({
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div>
-        <div className="flex items-center gap-2 mb-1.5">
-          <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-primary/10">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-          </div>
-          <h3 className="text-base font-semibold text-foreground">Look & Finish</h3>
-        </div>
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          Lighting & background only. Product shape and branding are preserved.
-        </p>
-      </div>
-
       {/* Aspect Ratio Selector */}
       {onAspectRatioChange && (
         <div className="pb-5 border-b border-border/40">
