@@ -188,7 +188,7 @@ export default function Home() {
                 onClick={() => {
                   const element = document.getElementById('upload-section');
                   if (element) {
-                    const offset = 80; // Offset for fixed nav
+                    const offset = 120; // Offset to position section header nicely
                     const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
                     const offsetPosition = elementPosition - offset;
                     window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
