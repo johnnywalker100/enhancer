@@ -21,7 +21,7 @@ export function ExampleShowcase({
 
   return (
     <section className="container py-20 md:py-32 bg-muted/30">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground tracking-tight mb-4">
@@ -32,122 +32,141 @@ export function ExampleShowcase({
           </p>
         </div>
 
-        {/* Steps Grid */}
-        <div className="grid sm:grid-cols-2 gap-8 md:gap-12 mb-16 md:mb-20">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 text-primary font-bold text-xl md:text-2xl mb-4">
-              1
-            </div>
-            <h3 className="text-xl md:text-2xl font-semibold mb-2">Upload a photo</h3>
-            <p className="text-muted-foreground">
-              Drop in a phone photo. We keep all fine details intact.
-            </p>
-          </div>
-          
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 text-primary font-bold text-xl md:text-2xl mb-4">
-              2
-            </div>
-            <h3 className="text-xl md:text-2xl font-semibold mb-2">Choose the finish</h3>
-            <p className="text-muted-foreground">
-              Pick shadows and lighting style that fits your brand.
-            </p>
-          </div>
-          
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 text-primary font-bold text-xl md:text-2xl mb-4">
-              3
-            </div>
-            <h3 className="text-xl md:text-2xl font-semibold mb-2">Enhance</h3>
-            <p className="text-muted-foreground">
-              AI generates studio-quality lighting and background.
-            </p>
-          </div>
-          
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary/10 text-primary font-bold text-xl md:text-2xl mb-4">
-              4
-            </div>
-            <h3 className="text-xl md:text-2xl font-semibold mb-2">Download</h3>
-            <p className="text-muted-foreground">
-              High-resolution PNG ready for any platform.
-            </p>
-          </div>
-        </div>
-
-        {/* Example Container */}
-        <div className="bg-white border border-border/50 rounded-3xl p-6 md:p-10 shadow-sm">
-          <div className="text-center mb-6">
-            <h3 className="text-xl md:text-2xl font-semibold mb-2">See it in action</h3>
-            <p className="text-sm text-muted-foreground">Real example of product photo enhancement</p>
-          </div>
-
-          {/* Toggle Tabs */}
-          <div className="max-w-md mx-auto mb-6">
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'before' | 'after')}>
-              <TabsList className="w-full grid grid-cols-2 h-12">
-                <TabsTrigger value="before" className="text-sm md:text-base font-semibold">
-                  Before
-                </TabsTrigger>
-                <TabsTrigger value="after" className="text-sm md:text-base font-semibold">
-                  After
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-
-          {/* Image Display - No forced aspect ratio, fits image size */}
-          <div className="relative flex justify-center">
-            {/* Before Image */}
-            <div
-              className={cn(
-                "transition-opacity duration-300 ease-in-out",
-                activeTab === 'before' ? 'opacity-100' : 'opacity-0 absolute inset-0'
-              )}
-            >
-              <div className="flex justify-center items-center rounded-2xl overflow-hidden bg-muted/20 border border-border/30">
-                <img
-                  src={beforeImage}
-                  alt="Before enhancement - original product photo"
-                  className="max-w-full h-auto object-contain rounded-2xl"
-                  style={{ maxHeight: '600px' }}
-                />
+        {/* Two Column Layout: Steps + Example */}
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+          {/* Left Column: Steps */}
+          <div className="space-y-8">
+            <div className="flex gap-4">
+              <div className="flex-shrink-0">
+                <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 text-primary font-bold text-xl">
+                  1
+                </div>
               </div>
-              <div className="text-center mt-4">
-                <p className="text-sm text-muted-foreground">
-                  Original phone photo
+              <div>
+                <h3 className="text-xl font-semibold mb-2">Upload a photo</h3>
+                <p className="text-muted-foreground">
+                  Drop in a phone photo. We keep all fine details intact.
                 </p>
               </div>
             </div>
-
-            {/* After Image */}
-            <div
-              className={cn(
-                "transition-opacity duration-300 ease-in-out",
-                activeTab === 'after' ? 'opacity-100' : 'opacity-0 absolute inset-0'
-              )}
-            >
-              <div className="flex justify-center items-center rounded-2xl overflow-hidden bg-muted/20 border border-border/30 relative group">
-                <img
-                  src={afterImage}
-                  alt="After enhancement - professional studio quality"
-                  className="max-w-full h-auto object-contain rounded-2xl"
-                  style={{ maxHeight: '600px' }}
-                />
-                {/* Subtle glow effect */}
-                <div className="absolute inset-0 rounded-2xl ring-2 ring-primary/10 group-hover:ring-primary/20 transition-all duration-200" />
+            
+            <div className="flex gap-4">
+              <div className="flex-shrink-0">
+                <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 text-primary font-bold text-xl">
+                  2
+                </div>
               </div>
-              <div className="text-center mt-4">
-                <p className="text-sm text-muted-foreground">
-                  Enhanced with professional lighting
+              <div>
+                <h3 className="text-xl font-semibold mb-2">Choose the finish</h3>
+                <p className="text-muted-foreground">
+                  Pick shadows and lighting style that fits your brand.
                 </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="flex-shrink-0">
+                <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 text-primary font-bold text-xl">
+                  3
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-2">Enhance</h3>
+                <p className="text-muted-foreground">
+                  AI generates studio-quality lighting and background.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="flex-shrink-0">
+                <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 text-primary font-bold text-xl">
+                  4
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-2">Download</h3>
+                <p className="text-muted-foreground">
+                  High-resolution PNG ready for any platform.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Example Container */}
+          <div className="bg-white border border-border/50 rounded-3xl p-6 md:p-8 shadow-sm">
+            <div className="text-center mb-6">
+              <h3 className="text-lg md:text-xl font-semibold mb-2">See it in action</h3>
+              <p className="text-sm text-muted-foreground">Real example of enhancement</p>
+            </div>
+
+            {/* Toggle Tabs */}
+            <div className="mb-6">
+              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'before' | 'after')}>
+                <TabsList className="w-full grid grid-cols-2 h-12">
+                  <TabsTrigger value="before" className="text-sm md:text-base font-semibold">
+                    Before
+                  </TabsTrigger>
+                  <TabsTrigger value="after" className="text-sm md:text-base font-semibold">
+                    After
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+
+            {/* Image Display - No forced aspect ratio, fits image size */}
+            <div className="relative flex justify-center min-h-[300px]">
+              {/* Before Image */}
+              <div
+                className={cn(
+                  "transition-opacity duration-300 ease-in-out",
+                  activeTab === 'before' ? 'opacity-100' : 'opacity-0 absolute inset-0'
+                )}
+              >
+                <div className="flex justify-center items-center rounded-2xl overflow-hidden bg-muted/20 border border-border/30">
+                  <img
+                    src={beforeImage}
+                    alt="Before enhancement - original product photo"
+                    className="max-w-full h-auto object-contain rounded-2xl"
+                    style={{ maxHeight: '500px' }}
+                  />
+                </div>
+                <div className="text-center mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Original phone photo
+                  </p>
+                </div>
+              </div>
+
+              {/* After Image */}
+              <div
+                className={cn(
+                  "transition-opacity duration-300 ease-in-out",
+                  activeTab === 'after' ? 'opacity-100' : 'opacity-0 absolute inset-0'
+                )}
+              >
+                <div className="flex justify-center items-center rounded-2xl overflow-hidden bg-muted/20 border border-border/30 relative group">
+                  <img
+                    src={afterImage}
+                    alt="After enhancement - professional studio quality"
+                    className="max-w-full h-auto object-contain rounded-2xl"
+                    style={{ maxHeight: '500px' }}
+                  />
+                  {/* Subtle glow effect */}
+                  <div className="absolute inset-0 rounded-2xl ring-2 ring-primary/10 group-hover:ring-primary/20 transition-all duration-200" />
+                </div>
+                <div className="text-center mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Enhanced with professional lighting
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-10 md:mt-12">
+        <div className="text-center mt-12 md:mt-16">
           <button
             onClick={() => {
               document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' });
