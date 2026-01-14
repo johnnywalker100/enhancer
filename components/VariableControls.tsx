@@ -40,7 +40,7 @@ const AspectRatioIcon = ({ ratio }: { ratio: string }) => {
     return (
       <div className="w-8 h-8 flex items-center justify-center">
         <div 
-          className="border-2 border-dashed border-current rounded opacity-60"
+          className="border-2 border-dashed border-current opacity-60"
           style={{ width: dim.width, height: dim.height }}
         />
       </div>
@@ -50,7 +50,7 @@ const AspectRatioIcon = ({ ratio }: { ratio: string }) => {
   return (
     <div className="w-8 h-8 flex items-center justify-center">
       <div 
-        className="border-[2.5px] border-current rounded-sm"
+        className="border-[2.5px] border-current"
         style={{ width: dim.width, height: dim.height }}
       />
     </div>
