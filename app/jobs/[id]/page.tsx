@@ -142,7 +142,10 @@ export default function JobDetailPage() {
   }
 
   const preset = getPreset(job.preset_id);
-  const variables = JSON.parse(job.variables_json);
+  // Supabase returns JSONB as objects, no need to parse
+  const variables = typeof job.variables_json === 'string' 
+    ? JSON.parse(job.variables_json) 
+    : (job.variables_json || {});
   const statusConfig = getStatusConfig(job.status);
   const StatusIcon = statusConfig.icon;
   const isProcessing = job.status === 'processing';
