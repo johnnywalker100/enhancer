@@ -104,39 +104,42 @@ export default function ImageUpload({ onFileSelect, preview, disabled }: ImageUp
       <div className="space-y-3 animate-in fade-in duration-200">
         <div 
           className={cn(
-            "relative group cursor-pointer rounded-xl overflow-hidden bg-green-50 dark:bg-green-950/30 border-2 border-green-200 dark:border-green-800",
-            "transition-all duration-200 hover:border-green-300 dark:hover:border-green-700",
+            "relative group cursor-pointer rounded-xl overflow-hidden bg-muted/30 border border-border/50",
+            "transition-all duration-200 hover:border-border",
             "p-6 text-center",
             isDisabled && "opacity-50 cursor-not-allowed"
           )}
           onClick={openFilePicker}
         >
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-green-900 dark:text-green-100">
-                Image uploaded successfully
-              </p>
-              <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                See preview below
-              </p>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <CheckCircle className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-medium text-foreground">
+                  Image uploaded
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Preview below
+                </p>
+              </div>
             </div>
             <button
               type="button"
-              className="mt-2 flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-border hover:bg-secondary/50 transition-colors text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border hover:bg-secondary/50 transition-colors text-sm font-medium whitespace-nowrap"
               onClick={openFilePicker}
             >
               <RefreshCw className="w-4 h-4" />
-              Change image
+              Change
             </button>
           </div>
         </div>
         
         {compressionInfo && (
-          <div className="flex items-center justify-center gap-2 text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30 px-3 py-2 rounded-lg">
-            <span>✓ {compressionInfo}</span>
+          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg">
+            <CheckCircle className="w-3.5 h-3.5" />
+            <span>{compressionInfo}</span>
           </div>
         )}
         
