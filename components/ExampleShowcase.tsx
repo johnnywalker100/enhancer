@@ -35,7 +35,7 @@ export function ExampleShowcase({
         {/* Two Column Layout: Steps + Example */}
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
           {/* Left Column: Steps */}
-          <div className="flex flex-col justify-center space-y-8 lg:pr-4">
+          <div className="flex flex-col justify-between lg:pr-4 h-full py-6">
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 text-primary font-bold text-xl">

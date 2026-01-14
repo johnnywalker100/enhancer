@@ -3,6 +3,7 @@
 import { Preset, VariableValues, VariableSchema } from '@/lib/types';
 import { Switch } from './ui/Switch';
 import { Select } from './ui/Select';
+import { ColorPicker } from './ui/ColorPicker';
 import { cn } from '@/lib/utils';
 import { Sparkles, RotateCcw, Ratio } from 'lucide-react';
 
@@ -72,6 +73,10 @@ const ASPECT_RATIO_OPTIONS = [
 
 // Mapping for improved labels and helper text
 const SETTING_INFO: Record<string, { label: string; helper: string }> = {
+  background_color: {
+    label: 'Background Color',
+    helper: 'Choose the background color for your product photo.',
+  },
   soft_shadow_beneath_product: {
     label: 'Contact Shadow (Subtle)',
     helper: 'Adds a soft grounding shadow under the product.',
@@ -118,6 +123,30 @@ export default function VariableControls({
     const value = variables[varSchema.key] ?? varSchema.default;
     const key = varSchema.key;
     const settingInfo = SETTING_INFO[key] || { label: varSchema.label, helper: '' };
+
+    if (varSchema.type === 'color') {
+      return (
+        <div 
+          key={key} 
+          className="pb-5 border-b border-border/40 last:border-0 last:pb-0 first:pt-0 animate-in fade-in duration-200"
+          style={{ animationDelay: `${index * 50}ms` }}
+        >
+          <label className="text-sm font-semibold text-foreground block mb-1.5">
+            {settingInfo.label || varSchema.label}
+          </label>
+          {settingInfo.helper && (
+            <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+              {settingInfo.helper}
+            </p>
+          )}
+          <ColorPicker
+            value={value ?? varSchema.default ?? '#ffffff'}
+            onChange={(newValue) => onChange(key, newValue)}
+            disabled={disabled}
+          />
+        </div>
+      );
+    }
 
     if (varSchema.type === 'boolean') {
       return (

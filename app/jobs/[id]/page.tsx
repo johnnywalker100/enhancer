@@ -201,11 +201,11 @@ export default function JobDetailPage() {
                     <h1 className="text-xl sm:text-2xl font-bold text-foreground">
                       Job {job.id.slice(0, 8)}
                     </h1>
-                    <span className={cn("status-badge", statusConfig.className)}>
+                    <span className="text-sm text-muted-foreground flex items-center gap-1.5">
                       {isProcessing ? (
-                        <StatusIcon className="w-3 h-3 animate-spin" />
+                        <StatusIcon className="w-3.5 h-3.5 animate-spin" />
                       ) : (
-                        <StatusIcon className="w-3 h-3" />
+                        <StatusIcon className="w-3.5 h-3.5" />
                       )}
                       {statusConfig.label}
                     </span>
@@ -219,17 +219,10 @@ export default function JobDetailPage() {
                   </div>
                 </div>
 
-                {/* Settings badges */}
+                {/* Settings list */}
                 {enabledSettings.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {enabledSettings.map((setting) => (
-                      <span 
-                        key={setting} 
-                        className="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium"
-                      >
-                        {setting}
-                      </span>
-                    ))}
+                  <div className="text-sm text-muted-foreground">
+                    {enabledSettings.join(' • ')}
                   </div>
                 )}
               </div>
@@ -280,10 +273,10 @@ export default function JobDetailPage() {
                         {SETTING_LABELS[key] || key.replace(/_/g, ' ')}
                       </span>
                       <span className={cn(
-                        "px-2 py-0.5 rounded-full text-xs font-medium",
+                        "text-xs font-medium",
                         value 
-                          ? "bg-emerald-50 text-emerald-700" 
-                          : "bg-muted text-muted-foreground"
+                          ? "text-emerald-700" 
+                          : "text-muted-foreground"
                       )}>
                         {value ? 'On' : 'Off'}
                       </span>

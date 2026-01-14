@@ -73,7 +73,7 @@ export const presets: Preset[] = [
       },
       background: {
         type: 'seamless studio background',
-        options: ['pure white', 'soft gradient', 'neutral solid tone'],
+        color: 'pure white',
         qualities: {
           distraction_free: true,
           smooth: true,
@@ -117,6 +117,12 @@ export const presets: Preset[] = [
     injection_mode: 'jsonpath',
     variables_schema: [
       {
+        key: 'background_color',
+        type: 'color',
+        label: 'Background Color',
+        default: '#ffffff',
+      },
+      {
         key: 'soft_shadow_beneath_product',
         type: 'boolean',
         label: 'Soft Shadow Beneath Product',
@@ -148,6 +154,7 @@ export const presets: Preset[] = [
       },
     ],
     jsonpath_patches: [
+      { op: 'set', path: '$.background.color', var: 'background_color' },
       { op: 'set', path: '$.optional_modifiers.soft_shadow_beneath_product', var: 'soft_shadow_beneath_product' },
       {
         op: 'set',

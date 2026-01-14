@@ -206,11 +206,11 @@ export default function JobsPage() {
                               </div>
                               
                               <div className="shrink-0 flex items-center gap-3">
-                                <span className={cn("status-badge", statusConfig.className)}>
+                                <span className="text-sm text-muted-foreground flex items-center gap-1.5">
                                   {isProcessing ? (
-                                    <StatusIcon className="w-3 h-3 animate-spin" />
+                                    <StatusIcon className="w-3.5 h-3.5 animate-spin" />
                                   ) : (
-                                    <StatusIcon className="w-3 h-3" />
+                                    <StatusIcon className="w-3.5 h-3.5" />
                                   )}
                                   {statusConfig.label}
                                 </span>
