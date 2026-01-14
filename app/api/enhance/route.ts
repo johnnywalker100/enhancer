@@ -10,19 +10,6 @@ import { getOrCreateSessionId, setSessionCookie } from '@/lib/session';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Handle unsupported methods
-export async function GET() {
-  return NextResponse.json({ error: 'Method not allowed. Use POST.' }, { status: 405 });
-}
-
-export async function PUT() {
-  return NextResponse.json({ error: 'Method not allowed. Use POST.' }, { status: 405 });
-}
-
-export async function DELETE() {
-  return NextResponse.json({ error: 'Method not allowed. Use POST.' }, { status: 405 });
-}
-
 export async function POST(request: NextRequest) {
   try {
     // Get or create session ID
