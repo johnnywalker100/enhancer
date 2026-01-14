@@ -10,7 +10,10 @@ export async function GET(request: NextRequest) {
     const sessionId = getOrCreateSessionId(request);
     const jobs = await dbOperations.getJobsBySession(sessionId);
     
-    const response = NextResponse.json({ jobs });
+    // Remove sensitive internal data before sending to client
+    const publicJobs = jobs.map(({ compiled_prompt_string, ...publicJob }) => publicJob);
+    
+    const response = NextResponse.json({ jobs: publicJobs });
     response.headers.set('Set-Cookie', setSessionCookie(sessionId));
     
     return response;

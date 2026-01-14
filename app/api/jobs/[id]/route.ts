@@ -19,7 +19,10 @@ export async function GET(
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
     
-    const response = NextResponse.json({ job });
+    // Remove sensitive internal data before sending to client
+    const { compiled_prompt_string, ...publicJob } = job;
+    
+    const response = NextResponse.json({ job: publicJob });
     response.headers.set('Set-Cookie', setSessionCookie(sessionId));
     
     return response;
