@@ -240,7 +240,7 @@ export default function Home() {
               <div className="grid lg:grid-cols-[380px_1fr] gap-8 lg:gap-12">
                 {/* Left Column: Settings */}
                 {preset && (
-                  <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm lg:sticky lg:top-24 lg:self-start">
+                  <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm">
                     <VariableControls
                       preset={preset}
                       variables={variables}
