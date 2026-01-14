@@ -236,29 +236,11 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Upload & Settings Section - Side by Side */}
-              <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 mb-8">
-                {/* Left Column: Upload Section */}
-                <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm">
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Upload className="w-5 h-5 text-primary" />
-                      <h3 className="text-lg font-semibold text-foreground">Upload Photo</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      JPEG, PNG, or WebP • Max 10MB
-                    </p>
-                  </div>
-                  <ImageUpload
-                    onFileSelect={handleFileSelect}
-                    preview={filePreview}
-                    disabled={isProcessing}
-                  />
-                </div>
-
-                {/* Right Column: Settings */}
+              {/* Main Grid: Settings on Left, Upload & Preview on Right */}
+              <div className="grid lg:grid-cols-[380px_1fr] gap-8 lg:gap-12">
+                {/* Left Column: Settings */}
                 {preset && (
-                  <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm">
+                  <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm lg:sticky lg:top-24 lg:self-start">
                     <VariableControls
                       preset={preset}
                       variables={variables}
@@ -270,73 +252,93 @@ export default function Home() {
                     />
                   </div>
                 )}
-              </div>
 
-              {/* Preview & Action Section - Only show when image is selected */}
-              {selectedFile && (
+                {/* Right Column: Upload, Action Buttons & Preview */}
                 <div className="space-y-6">
-                  {/* Action Buttons */}
-                  <div className="space-y-3 max-w-md mx-auto">
-                    <button
-                      onClick={handleEnhance}
-                      disabled={!selectedFile || !preset || isProcessing}
-                      className={cn(
-                        "w-full h-14 text-base font-semibold rounded-full inline-flex items-center justify-center gap-2",
-                        "bg-black text-white hover:bg-black/90 transition-all duration-200 shadow-lg",
-                        (!selectedFile || !preset || isProcessing) && "opacity-50 cursor-not-allowed"
-                      )}
-                    >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Enhancing...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-5 h-5" />
-                          Enhance Photo
-                        </>
-                      )}
-                    </button>
-
-                    {result && (
-                      <button
-                        onClick={handleReset}
-                        className="w-full h-12 text-base font-medium rounded-full border-2 border-border hover:bg-secondary/50 transition-colors duration-200 inline-flex items-center justify-center gap-2"
-                        disabled={isProcessing}
-                      >
-                        <RotateCcw className="w-4 h-4" />
-                        Create Another
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Preview */}
-                  <div ref={resultsRef} className="max-w-3xl mx-auto">
-                    <BeforeAfterPreview
-                      beforeUrl={filePreview}
-                      afterUrl={result?.outputUrl || null}
-                      onDownload={result ? handleDownload : undefined}
-                      isProcessing={isProcessing}
-                    />
-                    
-                    {/* Download Link */}
-                    {result && (
-                      <div className="mt-6 text-center">
-                        <a
-                          href={result.outputUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1"
-                        >
-                          Open full resolution
-                          <span aria-hidden="true">→</span>
-                        </a>
+                  {/* Upload Section */}
+                  <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm">
+                    <div className="mb-6">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Upload className="w-5 h-5 text-primary" />
+                        <h3 className="text-lg font-semibold text-foreground">Upload Photo</h3>
                       </div>
-                    )}
+                      <p className="text-sm text-muted-foreground">
+                        JPEG, PNG, or WebP • Max 10MB
+                      </p>
+                    </div>
+                    <ImageUpload
+                      onFileSelect={handleFileSelect}
+                      preview={filePreview}
+                      disabled={isProcessing}
+                    />
                   </div>
+
+                  {/* Action Buttons - Show when image is selected */}
+                  {selectedFile && (
+                    <div className="space-y-3">
+                      <button
+                        onClick={handleEnhance}
+                        disabled={!selectedFile || !preset || isProcessing}
+                        className={cn(
+                          "w-full h-14 text-base font-semibold rounded-full inline-flex items-center justify-center gap-2",
+                          "bg-black text-white hover:bg-black/90 transition-all duration-200 shadow-lg",
+                          (!selectedFile || !preset || isProcessing) && "opacity-50 cursor-not-allowed"
+                        )}
+                      >
+                        {isProcessing ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Enhancing...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-5 h-5" />
+                            Enhance Photo
+                          </>
+                        )}
+                      </button>
+
+                      {result && (
+                        <button
+                          onClick={handleReset}
+                          className="w-full h-12 text-base font-medium rounded-full border-2 border-border hover:bg-secondary/50 transition-colors duration-200 inline-flex items-center justify-center gap-2"
+                          disabled={isProcessing}
+                        >
+                          <RotateCcw className="w-4 h-4" />
+                          Create Another
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Preview - Show when image is selected */}
+                  {selectedFile && (
+                    <div ref={resultsRef}>
+                      <BeforeAfterPreview
+                        beforeUrl={filePreview}
+                        afterUrl={result?.outputUrl || null}
+                        onDownload={result ? handleDownload : undefined}
+                        isProcessing={isProcessing}
+                      />
+                      
+                      {/* Download Link */}
+                      {result && (
+                        <div className="mt-6 text-center">
+                          <a
+                            href={result.outputUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1"
+                          >
+                            Open full resolution
+                            <span aria-hidden="true">→</span>
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </section>
 
