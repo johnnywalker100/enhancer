@@ -59,15 +59,15 @@ const AspectRatioIcon = ({ ratio }: { ratio: string }) => {
 const ASPECT_RATIO_OPTIONS = [
   { value: 'auto', label: 'Auto', icon: <AspectRatioIcon ratio="auto" /> },
   { value: '1:1', label: '1:1', icon: <AspectRatioIcon ratio="1:1" /> },
-  { value: '4:3', label: '4:3', icon: <AspectRatioIcon ratio="4:3" /> },
   { value: '16:9', label: '16:9', icon: <AspectRatioIcon ratio="16:9" /> },
-  { value: '21:9', label: '21:9', icon: <AspectRatioIcon ratio="21:9" /> },
-  { value: '5:4', label: '5:4', icon: <AspectRatioIcon ratio="5:4" /> },
+  { value: '4:3', label: '4:3', icon: <AspectRatioIcon ratio="4:3" /> },
+  { value: '9:16', label: '9:16', icon: <AspectRatioIcon ratio="9:16" /> },
+  { value: '4:5', label: '4:5', icon: <AspectRatioIcon ratio="4:5" /> },
   { value: '3:2', label: '3:2', icon: <AspectRatioIcon ratio="3:2" /> },
   { value: '2:3', label: '2:3', icon: <AspectRatioIcon ratio="2:3" /> },
-  { value: '9:16', label: '9:16', icon: <AspectRatioIcon ratio="9:16" /> },
   { value: '3:4', label: '3:4', icon: <AspectRatioIcon ratio="3:4" /> },
-  { value: '4:5', label: '4:5', icon: <AspectRatioIcon ratio="4:5" /> },
+  { value: '5:4', label: '5:4', icon: <AspectRatioIcon ratio="5:4" /> },
+  { value: '21:9', label: '21:9', icon: <AspectRatioIcon ratio="21:9" /> },
 ];
 
 // Mapping for improved labels and helper text
