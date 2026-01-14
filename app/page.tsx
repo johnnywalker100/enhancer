@@ -71,24 +71,28 @@ export default function Home() {
         body: formData,
       });
 
-      // Check if response has content before parsing
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const text = await response.text();
-        throw new Error(text || `Server returned ${response.status} ${response.statusText}`);
-      }
-
-      let data;
-      try {
-        const text = await response.text();
-        data = text ? JSON.parse(text) : {};
-      } catch (parseError) {
-        throw new Error(`Invalid response from server: ${response.status} ${response.statusText}`);
-      }
-
       if (!response.ok) {
-        throw new Error(data.error || data.message || 'Enhancement failed');
+        const contentType = response.headers.get('content-type');
+        let errorMessage = `Server returned ${response.status} ${response.statusText}`;
+        
+        if (contentType && contentType.includes('application/json')) {
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorData.message || errorMessage;
+          } catch (e) {
+            // If JSON parsing fails, try text
+            const text = await response.text();
+            errorMessage = text || errorMessage;
+          }
+        } else {
+          const text = await response.text();
+          errorMessage = text || errorMessage;
+        }
+        
+        throw new Error(errorMessage);
       }
+
+      const data = await response.json();
 
       setResult({
         jobId: data.job_id,
