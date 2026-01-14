@@ -33,9 +33,9 @@ export function ExampleShowcase({
         </div>
 
         {/* Two Column Layout: Steps + Example */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
           {/* Left Column: Steps */}
-          <div className="space-y-8">
+          <div className="flex flex-col justify-center space-y-8 lg:pr-4">
             <div className="flex gap-4">
               <div className="flex-shrink-0">
                 <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 text-primary font-bold text-xl">
@@ -94,7 +94,7 @@ export function ExampleShowcase({
           </div>
 
           {/* Right Column: Example Container */}
-          <div className="bg-white border border-border/50 rounded-3xl p-6 md:p-8 shadow-sm">
+          <div className="bg-white border border-border/50 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col h-full">
             <div className="text-center mb-6">
               <h3 className="text-lg md:text-xl font-semibold mb-2">See it in action</h3>
               <p className="text-sm text-muted-foreground">Real example of enhancement</p>
@@ -115,15 +115,15 @@ export function ExampleShowcase({
             </div>
 
             {/* Image Display - No forced aspect ratio, fits image size */}
-            <div className="relative flex justify-center min-h-[300px]">
+            <div className="relative flex justify-center flex-1 min-h-[350px]">
               {/* Before Image */}
               <div
                 className={cn(
-                  "transition-opacity duration-300 ease-in-out",
+                  "transition-opacity duration-300 ease-in-out flex flex-col",
                   activeTab === 'before' ? 'opacity-100' : 'opacity-0 absolute inset-0'
                 )}
               >
-                <div className="flex justify-center items-center rounded-2xl overflow-hidden bg-muted/20 border border-border/30">
+                <div className="flex justify-center items-center rounded-2xl overflow-hidden bg-muted/20 border border-border/30 flex-1">
                   <img
                     src={beforeImage}
                     alt="Before enhancement - original product photo"
@@ -141,11 +141,11 @@ export function ExampleShowcase({
               {/* After Image */}
               <div
                 className={cn(
-                  "transition-opacity duration-300 ease-in-out",
+                  "transition-opacity duration-300 ease-in-out flex flex-col",
                   activeTab === 'after' ? 'opacity-100' : 'opacity-0 absolute inset-0'
                 )}
               >
-                <div className="flex justify-center items-center rounded-2xl overflow-hidden bg-muted/20 border border-border/30 relative group">
+                <div className="flex justify-center items-center rounded-2xl overflow-hidden bg-muted/20 border border-border/30 relative group flex-1">
                   <img
                     src={afterImage}
                     alt="After enhancement - professional studio quality"
