@@ -234,7 +234,7 @@ export default function Home() {
 
               {/* Error Alert */}
               {error && (
-                <div className="mb-8 max-w-3xl mx-auto">
+                <div className="mb-8">
                   <Alert variant="destructive">
                     <AlertTitle>Something went wrong</AlertTitle>
                     <AlertDescription>{error}</AlertDescription>
@@ -242,8 +242,9 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Upload Section - Full Width */}
-              <div className="max-w-2xl mx-auto mb-8">
+              {/* Upload & Settings Section - Side by Side */}
+              <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 mb-8">
+                {/* Left Column: Upload Section */}
                 <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm">
                   <div className="mb-6">
                     <div className="flex items-center gap-2 mb-2">
@@ -260,67 +261,64 @@ export default function Home() {
                     disabled={isProcessing}
                   />
                 </div>
+
+                {/* Right Column: Settings */}
+                {preset && (
+                  <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm">
+                    <VariableControls
+                      preset={preset}
+                      variables={variables}
+                      onChange={handleVariableChange}
+                      onReset={resetVariables}
+                      disabled={isProcessing}
+                      aspectRatio={aspectRatio}
+                      onAspectRatioChange={setAspectRatio}
+                    />
+                  </div>
+                )}
               </div>
 
-              {/* Settings & Preview Section - Only show when image is selected */}
+              {/* Preview & Action Section - Only show when image is selected */}
               {selectedFile && (
-                <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-                  {/* Left Column: Settings & Actions */}
-                  <div className="space-y-6">
-                    {/* Settings Card */}
-                    {preset && (
-                      <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm">
-                        <VariableControls
-                          preset={preset}
-                          variables={variables}
-                          onChange={handleVariableChange}
-                          onReset={resetVariables}
-                          disabled={isProcessing}
-                          aspectRatio={aspectRatio}
-                          onAspectRatioChange={setAspectRatio}
-                        />
-                      </div>
-                    )}
-
-                    {/* Action Buttons */}
-                    <div className="space-y-3">
-                      <button
-                        onClick={handleEnhance}
-                        disabled={!selectedFile || !preset || isProcessing}
-                        className={cn(
-                          "w-full h-14 text-base font-semibold rounded-full inline-flex items-center justify-center gap-2",
-                          "bg-black text-white hover:bg-black/90 transition-all duration-200 shadow-lg",
-                          (!selectedFile || !preset || isProcessing) && "opacity-50 cursor-not-allowed"
-                        )}
-                      >
-                        {isProcessing ? (
-                          <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            Enhancing...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-5 h-5" />
-                            Enhance Photo
-                          </>
-                        )}
-                      </button>
-
-                      {result && (
-                        <button
-                          onClick={handleReset}
-                          className="w-full h-12 text-base font-medium rounded-full border-2 border-border hover:bg-secondary/50 transition-colors duration-200 inline-flex items-center justify-center gap-2"
-                          disabled={isProcessing}
-                        >
-                          <RotateCcw className="w-4 h-4" />
-                          Create Another
-                        </button>
+                <div className="space-y-6">
+                  {/* Action Buttons */}
+                  <div className="space-y-3 max-w-md mx-auto">
+                    <button
+                      onClick={handleEnhance}
+                      disabled={!selectedFile || !preset || isProcessing}
+                      className={cn(
+                        "w-full h-14 text-base font-semibold rounded-full inline-flex items-center justify-center gap-2",
+                        "bg-black text-white hover:bg-black/90 transition-all duration-200 shadow-lg",
+                        (!selectedFile || !preset || isProcessing) && "opacity-50 cursor-not-allowed"
                       )}
-                    </div>
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Enhancing...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-5 h-5" />
+                          Enhance Photo
+                        </>
+                      )}
+                    </button>
+
+                    {result && (
+                      <button
+                        onClick={handleReset}
+                        className="w-full h-12 text-base font-medium rounded-full border-2 border-border hover:bg-secondary/50 transition-colors duration-200 inline-flex items-center justify-center gap-2"
+                        disabled={isProcessing}
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        Create Another
+                      </button>
+                    )}
                   </div>
 
-                  {/* Right Column: Results */}
-                  <div ref={resultsRef}>
+                  {/* Preview */}
+                  <div ref={resultsRef} className="max-w-3xl mx-auto">
                     <BeforeAfterPreview
                       beforeUrl={filePreview}
                       afterUrl={result?.outputUrl || null}
