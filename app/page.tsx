@@ -201,7 +201,7 @@ export default function Home() {
                     </AccordionTrigger>
                     <AccordionContent>
                       <p className="text-sm text-muted-foreground pl-9">
-                        Drop in a phone photo. We keep the product's shape, logos, and all fine details intact.
+                        Drop in a phone photo. We keep the product&apos;s shape, logos, and all fine details intact.
                       </p>
                     </AccordionContent>
                   </AccordionItem>

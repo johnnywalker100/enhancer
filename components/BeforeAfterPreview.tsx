@@ -61,7 +61,7 @@ export function BeforeAfterPreview({ beforeUrl, afterUrl, onDownload, isProcessi
             <div>
               <p className="text-xs sm:text-sm font-medium text-foreground/80">No preview yet</p>
               <p className="text-[11px] sm:text-xs text-muted-foreground mt-1 max-w-[200px]">
-                Upload an image and tap "Enhance" to see results
+                Upload an image and tap &quot;Enhance&quot; to see results
               </p>
             </div>
           </div>
