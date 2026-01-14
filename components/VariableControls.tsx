@@ -19,11 +19,11 @@ interface VariableControlsProps {
 // Aspect ratio icon component
 const AspectRatioIcon = ({ ratio }: { ratio: string }) => {
   const dimensions: Record<string, { width: number; height: number }> = {
-    'auto': { width: 20, height: 20 },
-    '1:1': { width: 20, height: 20 },
+    'auto': { width: 18, height: 18 },
+    '1:1': { width: 18, height: 18 },
     '4:3': { width: 20, height: 15 },
     '16:9': { width: 24, height: 13.5 },
-    '21:9': { width: 24, height: 10 },
+    '21:9': { width: 26, height: 11 },
     '5:4': { width: 20, height: 16 },
     '3:2': { width: 21, height: 14 },
     '2:3': { width: 14, height: 21 },
@@ -32,14 +32,14 @@ const AspectRatioIcon = ({ ratio }: { ratio: string }) => {
     '4:5': { width: 16, height: 20 },
   };
 
-  const dim = dimensions[ratio] || { width: 20, height: 20 };
+  const dim = dimensions[ratio] || { width: 18, height: 18 };
 
   // Auto gets a special icon with dashed border
   if (ratio === 'auto') {
     return (
-      <div className="w-7 h-7 flex items-center justify-center">
+      <div className="w-8 h-8 flex items-center justify-center">
         <div 
-          className="border-2 border-dashed border-muted-foreground rounded"
+          className="border-2 border-dashed border-current rounded opacity-60"
           style={{ width: dim.width, height: dim.height }}
         />
       </div>
@@ -47,9 +47,9 @@ const AspectRatioIcon = ({ ratio }: { ratio: string }) => {
   }
 
   return (
-    <div className="w-7 h-7 flex items-center justify-center">
+    <div className="w-8 h-8 flex items-center justify-center">
       <div 
-        className="border-2 border-foreground rounded"
+        className="border-[2.5px] border-current rounded-sm"
         style={{ width: dim.width, height: dim.height }}
       />
     </div>
@@ -57,17 +57,17 @@ const AspectRatioIcon = ({ ratio }: { ratio: string }) => {
 };
 
 const ASPECT_RATIO_OPTIONS = [
-  { value: 'auto', label: 'Auto', icon: <AspectRatioIcon ratio="auto" /> },
-  { value: '1:1', label: '1:1', icon: <AspectRatioIcon ratio="1:1" /> },
-  { value: '16:9', label: '16:9', icon: <AspectRatioIcon ratio="16:9" /> },
-  { value: '4:3', label: '4:3', icon: <AspectRatioIcon ratio="4:3" /> },
-  { value: '9:16', label: '9:16', icon: <AspectRatioIcon ratio="9:16" /> },
-  { value: '4:5', label: '4:5', icon: <AspectRatioIcon ratio="4:5" /> },
-  { value: '3:2', label: '3:2', icon: <AspectRatioIcon ratio="3:2" /> },
-  { value: '2:3', label: '2:3', icon: <AspectRatioIcon ratio="2:3" /> },
-  { value: '3:4', label: '3:4', icon: <AspectRatioIcon ratio="3:4" /> },
-  { value: '5:4', label: '5:4', icon: <AspectRatioIcon ratio="5:4" /> },
-  { value: '21:9', label: '21:9', icon: <AspectRatioIcon ratio="21:9" /> },
+  { value: 'auto', label: 'Auto (Original)', icon: <AspectRatioIcon ratio="auto" /> },
+  { value: '1:1', label: '1:1 Square', icon: <AspectRatioIcon ratio="1:1" /> },
+  { value: '16:9', label: '16:9 Landscape', icon: <AspectRatioIcon ratio="16:9" /> },
+  { value: '4:3', label: '4:3 Landscape', icon: <AspectRatioIcon ratio="4:3" /> },
+  { value: '3:2', label: '3:2 Landscape', icon: <AspectRatioIcon ratio="3:2" /> },
+  { value: '5:4', label: '5:4 Landscape', icon: <AspectRatioIcon ratio="5:4" /> },
+  { value: '21:9', label: '21:9 Ultrawide', icon: <AspectRatioIcon ratio="21:9" /> },
+  { value: '9:16', label: '9:16 Portrait', icon: <AspectRatioIcon ratio="9:16" /> },
+  { value: '4:5', label: '4:5 Portrait', icon: <AspectRatioIcon ratio="4:5" /> },
+  { value: '3:4', label: '3:4 Portrait', icon: <AspectRatioIcon ratio="3:4" /> },
+  { value: '2:3', label: '2:3 Portrait', icon: <AspectRatioIcon ratio="2:3" /> },
 ];
 
 // Mapping for improved labels and helper text
@@ -173,13 +173,18 @@ export default function VariableControls({
 
       {/* Aspect Ratio Selector */}
       {onAspectRatioChange && (
-        <div className="pb-4 border-b border-border/40">
-          <div className="flex items-center gap-2 mb-2">
-            <Ratio className="w-4 h-4 text-muted-foreground" />
-            <label className="text-sm font-medium text-foreground">
-              Aspect Ratio
+        <div className="pb-5 border-b border-border/40">
+          <div className="flex items-center gap-2 mb-1.5">
+            <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-primary/10">
+              <Ratio className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <label className="text-sm font-semibold text-foreground">
+              Output Dimensions
             </label>
           </div>
+          <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+            Choose the output image aspect ratio. Auto keeps the original proportions.
+          </p>
           <Select
             value={aspectRatio}
             onValueChange={onAspectRatioChange}
@@ -187,9 +192,6 @@ export default function VariableControls({
             disabled={disabled}
             placeholder="Select aspect ratio"
           />
-          <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-            Choose the output image dimensions. Auto maintains original aspect ratio.
-          </p>
         </div>
       )}
 
