@@ -221,7 +221,7 @@ export function ColorPicker({ value, onChange, disabled, label }: ColorPickerPro
           {/* Presets */}
           <div className="mt-4">
             <div className="mb-2 flex items-center justify-between">
-              <div className="text-xs font-medium text-muted-foreground">Saved colors</div>
+              <div className="text-xs font-medium text-muted-foreground">Recent Colors</div>
               <button
                 type="button"
                 className={cn(
@@ -230,7 +230,7 @@ export function ColorPicker({ value, onChange, disabled, label }: ColorPickerPro
                 )}
                 onClick={addCurrentColor}
                 disabled={!isValidHex6(value)}
-                title="Add current color to saved colors"
+                title="Add current color to recent colors"
               >
                 <Plus className="h-3 w-3" />
                 Add new color
