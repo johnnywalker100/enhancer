@@ -4,74 +4,336 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --radius: 1rem;
+    --background: 0 0% 99%;
+    --foreground: 224 71% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 9% 46%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 220 14% 96%;
+    --accent-foreground: 220 9% 26%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 239 84% 67%;
+    --radius: 0.75rem;
+    /* Safe area insets for notched phones */
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+    /* Prevent text selection on interactive elements for mobile */
+    -webkit-tap-highlight-color: transparent;
   }
+
+  html {
+    /* Prevent pull-to-refresh on mobile */
+    overscroll-behavior-y: none;
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-gradient-to-br from-gray-50 via-white to-gray-50 text-foreground;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    /* Prevent horizontal overflow */
+    overflow-x: hidden;
+    /* Safe area padding */
+    padding-top: var(--safe-area-inset-top);
+    padding-bottom: var(--safe-area-inset-bottom);
+    padding-left: var(--safe-area-inset-left);
+    padding-right: var(--safe-area-inset-right);
+  }
+
+  /* Better touch experience */
+  button, a, [role="button"] {
+    touch-action: manipulation;
+  }
+
+  /* Prevent zoom on input focus on iOS */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  @media (min-width: 768px) {
+    input, select, textarea {
+      font-size: inherit !important;
+    }
   }
 }
 
-/* Legacy styles for backward compatibility */
+/* Container utility - optimized for mobile */
 .container {
   @apply max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8;
+  /* Add safe area padding on sides for landscape phones with notches */
+  padding-left: max(1rem, var(--safe-area-inset-left));
+  padding-right: max(1rem, var(--safe-area-inset-right));
 }
 
-.btn {
-  @apply px-6 py-3 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+@media (min-width: 640px) {
+  .container {
+    padding-left: max(1.5rem, var(--safe-area-inset-left));
+    padding-right: max(1.5rem, var(--safe-area-inset-right));
+  }
 }
 
-.btn-primary {
-  @apply bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed;
+/* Glass header effect - Magic UI style */
+.glass-header {
+  @apply sticky top-0 z-50;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@supports not (backdrop-filter: blur(16px)) {
+  .glass-header {
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* Magic UI inspired button styles - mobile optimized */
+.btn-magic {
+  @apply relative inline-flex items-center justify-center gap-2;
+  @apply px-5 py-3 sm:px-6 rounded-xl font-medium;
+  @apply transition-all duration-300 ease-out;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary;
+  /* Minimum touch target for mobile accessibility */
+  min-height: 44px;
+}
+
+.btn-magic-primary {
+  @apply btn-magic text-white;
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(239 70% 55%) 100%);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+/* Only apply hover effects on devices that support hover */
+@media (hover: hover) {
+  .btn-magic-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+  }
+}
+
+.btn-magic-primary:active:not(:disabled) {
+  transform: translateY(0);
+  /* Add active feedback for touch */
+  opacity: 0.9;
+}
+
+.btn-magic-primary:disabled {
+  @apply opacity-50 cursor-not-allowed;
+  box-shadow: none;
 }
 
 .btn-secondary {
-  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary;
+  @apply btn-magic bg-secondary text-secondary-foreground border border-border;
+  min-height: 44px;
 }
 
-.card {
-  @apply bg-white rounded-2xl p-6 shadow-sm border border-gray-100;
+@media (hover: hover) {
+  .btn-secondary:hover:not(:disabled) {
+    @apply bg-secondary/80;
+  }
 }
 
+.btn-ghost {
+  @apply btn-magic text-muted-foreground;
+  min-height: 44px;
+}
+
+@media (hover: hover) {
+  .btn-ghost:hover:not(:disabled) {
+    @apply text-foreground bg-secondary;
+  }
+}
+
+/* Magic UI Card styles - mobile optimized */
+.magic-card {
+  @apply rounded-xl sm:rounded-2xl bg-card border border-border/60;
+  @apply transition-all duration-300;
+}
+
+@media (hover: hover) {
+  .magic-card:hover {
+    @apply border-border/80 shadow-lg;
+  }
+}
+
+/* Status badges */
 .status-badge {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium;
 }
 
 .status-queued {
-  @apply bg-gray-100 text-gray-700;
+  @apply bg-slate-100 text-slate-700;
 }
 
 .status-processing {
-  @apply bg-yellow-100 text-yellow-800;
+  @apply bg-amber-50 text-amber-700 border border-amber-200/50;
 }
 
 .status-complete {
-  @apply bg-green-100 text-green-800;
+  @apply bg-emerald-50 text-emerald-700 border border-emerald-200/50;
 }
 
 .status-failed {
-  @apply bg-red-100 text-red-800;
+  @apply bg-red-50 text-red-700 border border-red-200/50;
+}
+
+/* Premium upload zone - mobile optimized */
+.upload-zone {
+  @apply relative rounded-2xl border-2 border-dashed border-border/60;
+  @apply transition-all duration-300;
+  /* Larger padding on mobile for better tap target */
+  @apply p-6 sm:p-8;
+}
+
+@media (hover: hover) {
+  .upload-zone:hover {
+    @apply border-primary/40 bg-primary/5;
+  }
+}
+
+.upload-zone:active {
+  @apply border-primary/60 bg-primary/10;
+}
+
+.upload-zone.dragging {
+  @apply border-primary bg-primary/10 scale-[1.01];
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.15);
+}
+
+/* Image preview container */
+.image-preview-container {
+  @apply relative rounded-xl overflow-hidden bg-muted/30 border border-border/50;
+  @apply flex items-center justify-center;
+}
+
+/* Switch toggle styling - larger touch targets for mobile */
+.switch-root {
+  @apply relative inline-flex h-7 w-12 sm:h-6 sm:w-11 shrink-0 cursor-pointer rounded-full;
+  @apply border-2 border-transparent transition-colors duration-200;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  @apply disabled:cursor-not-allowed disabled:opacity-50;
+  /* Expand touch area */
+  touch-action: manipulation;
+}
+
+.switch-thumb {
+  @apply pointer-events-none inline-block h-6 w-6 sm:h-5 sm:w-5 rounded-full bg-white shadow-lg;
+  @apply ring-0 transition-transform duration-200;
+}
+
+/* Accordion styling - mobile optimized */
+.accordion-trigger {
+  @apply flex w-full items-center justify-between py-4 sm:py-4 text-sm font-medium;
+  @apply text-left transition-colors;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  /* Minimum touch target */
+  min-height: 48px;
+  touch-action: manipulation;
+}
+
+@media (hover: hover) {
+  .accordion-trigger:hover {
+    @apply text-foreground;
+  }
+}
+
+.accordion-content {
+  @apply overflow-hidden transition-all duration-300;
+}
+
+/* Trust bullet styling - mobile responsive */
+.trust-bullet {
+  @apply flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground;
+  @apply px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-full bg-muted/50;
+}
+
+.trust-bullet-icon {
+  @apply w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary shrink-0;
+}
+
+/* Subtle glow animation */
+@keyframes subtle-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.2);
+  }
+}
+
+.animate-subtle-glow {
+  animation: subtle-glow 3s ease-in-out infinite;
+}
+
+/* Loading spinner */
+.spinner {
+  @apply animate-spin rounded-full border-2 border-current border-t-transparent;
+}
+
+/* Focus visible for accessibility */
+.focus-ring {
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+}
+
+/* Mobile-specific utilities */
+@layer utilities {
+  /* Hide scrollbar but keep scrolling */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Safe area spacing */
+  .pb-safe {
+    padding-bottom: max(1rem, var(--safe-area-inset-bottom));
+  }
+  
+  .pt-safe {
+    padding-top: max(0.5rem, var(--safe-area-inset-top));
+  }
+  
+  /* Mobile text scaling */
+  .text-mobile-xs {
+    @apply text-[11px] sm:text-xs;
+  }
+  
+  .text-mobile-sm {
+    @apply text-xs sm:text-sm;
+  }
+  
+  .text-mobile-base {
+    @apply text-sm sm:text-base;
+  }
+  
+  .text-mobile-lg {
+    @apply text-base sm:text-lg;
+  }
+}
+
+/* Page background for mobile */
+.page-background {
+  @apply bg-gradient-to-b from-background via-background to-muted/20;
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
 }

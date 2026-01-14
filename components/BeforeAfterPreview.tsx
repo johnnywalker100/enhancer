@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Download, Image as ImageIcon } from 'lucide-react';
+import { Download, Eye, Loader2 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/Tabs';
+import { cn } from '@/lib/utils';
 
 interface BeforeAfterPreviewProps {
   beforeUrl: string | null;
@@ -14,95 +15,137 @@ interface BeforeAfterPreviewProps {
 export function BeforeAfterPreview({ beforeUrl, afterUrl, onDownload, isProcessing }: BeforeAfterPreviewProps) {
   const [activeTab, setActiveTab] = useState<'before' | 'after'>('after');
 
+  // Processing state with loading animation
   if (isProcessing) {
     return (
-      <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-        <div className="flex flex-col items-center justify-center py-12 space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          <p className="text-sm text-gray-600">Working on it...</p>
+      <div className="magic-card p-4 sm:p-6">
+        <div className="mb-3 sm:mb-4">
+          <h3 className="text-sm sm:text-base font-semibold text-foreground">Preview</h3>
+          <p className="text-[11px] sm:text-xs text-muted-foreground">Generating your enhanced image...</p>
+        </div>
+        
+        <div className="relative aspect-[4/3] sm:aspect-square rounded-lg sm:rounded-xl overflow-hidden bg-gradient-to-br from-muted/30 to-muted/10 border border-border/30">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 sm:gap-5">
+            {/* Animated loader */}
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
+              <div className="relative flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20">
+                <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 text-primary animate-spin" />
+              </div>
+            </div>
+            
+            <div className="text-center px-4">
+              <p className="text-xs sm:text-sm font-medium text-foreground">Enhancing your photo</p>
+              <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">This usually takes 10-15 seconds</p>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
+  // Empty state
   if (!afterUrl) {
     return (
-      <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-        <div className="flex flex-col items-center justify-center py-12 space-y-3">
-          <div className="rounded-full bg-gray-100 p-4">
-            <ImageIcon className="w-8 h-8 text-gray-400" />
+      <div className="magic-card p-4 sm:p-6">
+        <div className="mb-3 sm:mb-4">
+          <h3 className="text-sm sm:text-base font-semibold text-foreground">Preview</h3>
+          <p className="text-[11px] sm:text-xs text-muted-foreground">Your enhanced image will appear here</p>
+        </div>
+        
+        <div className="aspect-[4/3] sm:aspect-square rounded-lg sm:rounded-xl bg-gradient-to-br from-muted/20 to-muted/5 border-2 border-dashed border-border/50 flex flex-col items-center justify-center">
+          <div className="text-center space-y-3 sm:space-y-4 px-4">
+            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-muted/50">
+              <Eye className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground/50" />
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm font-medium text-foreground/80">No preview yet</p>
+              <p className="text-[11px] sm:text-xs text-muted-foreground mt-1 max-w-[200px]">
+                Upload an image and tap "Enhance" to see results
+              </p>
+            </div>
           </div>
-          <p className="text-sm font-medium text-gray-900">No enhancement yet</p>
-          <p className="text-xs text-gray-600 text-center max-w-xs">
-            Upload an image and click &quot;Enhance Photo&quot; to see the result here
-          </p>
         </div>
       </div>
     );
   }
 
+  // Result state with animate-in
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">Preview</h3>
-        <p className="text-xs text-gray-600">PNG • 1K Resolution</p>
+    <div className="magic-card p-4 sm:p-6 animate-in fade-in slide-in-from-bottom-2 duration-200 ease-out">
+      <div className="mb-3 sm:mb-4 flex items-start justify-between">
+        <div>
+          <h3 className="text-sm sm:text-base font-semibold text-foreground">Preview</h3>
+          <p className="text-[11px] sm:text-xs text-muted-foreground">PNG • High Resolution</p>
+        </div>
       </div>
 
       {/* Mobile: Tabs */}
-      <div className="block md:hidden mb-4">
+      <div className="block md:hidden mb-3 sm:mb-4">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'before' | 'after')}>
-          <TabsList className="w-full">
-            <TabsTrigger value="before" className="flex-1">Before</TabsTrigger>
-            <TabsTrigger value="after" className="flex-1">After</TabsTrigger>
+          <TabsList className="w-full grid grid-cols-2">
+            <TabsTrigger value="before" className="flex-1 text-xs sm:text-sm">Before</TabsTrigger>
+            <TabsTrigger value="after" className="flex-1 text-xs sm:text-sm">After</TabsTrigger>
           </TabsList>
-          <TabsContent value="before" className="mt-4">
+          <TabsContent value="before" className="mt-3 sm:mt-4 animate-in fade-in duration-150">
             {beforeUrl && (
-              <img
-                src={beforeUrl}
-                alt="Before"
-                className="w-full rounded-lg object-contain max-h-[400px]"
-              />
+              <div className="image-preview-container aspect-[4/3] sm:aspect-square rounded-lg sm:rounded-xl">
+                <img
+                  src={beforeUrl}
+                  alt="Before enhancement"
+                  className="w-full h-full object-contain"
+                />
+              </div>
             )}
           </TabsContent>
-          <TabsContent value="after" className="mt-4">
-            <img
-              src={afterUrl}
-              alt="After"
-              className="w-full rounded-lg object-contain max-h-[400px]"
-            />
+          <TabsContent value="after" className="mt-3 sm:mt-4 animate-in fade-in duration-150">
+            <div className="image-preview-container aspect-[4/3] sm:aspect-square rounded-lg sm:rounded-xl">
+              <img
+                src={afterUrl}
+                alt="After enhancement"
+                className="w-full h-full object-contain"
+              />
+            </div>
           </TabsContent>
         </Tabs>
       </div>
 
       {/* Desktop: Side by side */}
-      <div className="hidden md:grid md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <p className="text-xs font-medium text-gray-600 mb-2">Before</p>
+      <div className="hidden md:grid md:grid-cols-2 gap-4 mb-4 sm:mb-5">
+        <div className="animate-in fade-in slide-in-from-left-2 duration-200">
+          <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mb-1.5 sm:mb-2 uppercase tracking-wider">Before</p>
           {beforeUrl && (
-            <img
-              src={beforeUrl}
-              alt="Before"
-              className="w-full rounded-lg object-contain max-h-[500px] border border-gray-200"
-            />
+            <div className="image-preview-container aspect-square rounded-lg sm:rounded-xl">
+              <img
+                src={beforeUrl}
+                alt="Before enhancement"
+                className="w-full h-full object-contain"
+              />
+            </div>
           )}
         </div>
-        <div>
-          <p className="text-xs font-medium text-gray-600 mb-2">After</p>
-          <img
-            src={afterUrl}
-            alt="After"
-            className="w-full rounded-lg object-contain max-h-[500px] border border-gray-200"
-          />
+        <div className="animate-in fade-in slide-in-from-right-2 duration-200 delay-75">
+          <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mb-1.5 sm:mb-2 uppercase tracking-wider">After</p>
+          <div className="image-preview-container aspect-square relative group rounded-lg sm:rounded-xl">
+            <img
+              src={afterUrl}
+              alt="After enhancement"
+              className="w-full h-full object-contain"
+            />
+            {/* Subtle hover glow */}
+            <div className="absolute inset-0 rounded-lg sm:rounded-xl ring-2 ring-primary/0 group-hover:ring-primary/20 transition-all duration-200" />
+          </div>
         </div>
       </div>
 
       {onDownload && (
         <button
           onClick={onDownload}
-          className="w-full btn btn-primary flex items-center justify-center gap-2"
+          className="w-full btn-magic-primary text-sm animate-in fade-in duration-200 delay-100"
         >
           <Download className="w-4 h-4" />
-          Download Enhanced Image
+          <span className="hidden sm:inline">Download Enhanced Image</span>
+          <span className="sm:hidden">Download</span>
         </button>
       )}
     </div>

@@ -6,11 +6,22 @@ import ImageUpload from '@/components/ImageUpload';
 import { BeforeAfterPreview } from '@/components/BeforeAfterPreview';
 import { Navigation, Footer } from '@/components/Navigation';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/Alert';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/Accordion';
+import { AnimatedGradientBackground } from '@/components/magicui/animated-gradient-background';
+import { MagicCard } from '@/components/magicui/magic-card';
 import { getPreset } from '@/lib/presets';
 import type { Preset } from '@/lib/types';
 import { VariableValues } from '@/lib/types';
-import { Wand2, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { 
+  Sparkles, 
+  Upload, 
+  ShieldCheck, 
+  Lightbulb, 
+  CheckCircle,
+  RotateCcw,
+  Loader2
+} from 'lucide-react';
 
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -49,6 +60,18 @@ export default function Home() {
     setVariables(prev => ({ ...prev, [key]: value }));
   }, []);
 
+  const resetVariables = useCallback(() => {
+    if (preset) {
+      const defaults: VariableValues = {};
+      for (const varSchema of preset.variables_schema) {
+        if (varSchema.default !== undefined) {
+          defaults[varSchema.key] = varSchema.default;
+        }
+      }
+      setVariables(defaults);
+    }
+  }, [preset]);
+
   const handleEnhance = useCallback(async () => {
     if (!selectedFile || !preset) {
       setError('Please select an image');
@@ -79,7 +102,6 @@ export default function Home() {
             const errorData = await response.json();
             errorMessage = errorData.error || errorData.message || errorMessage;
           } catch (e) {
-            // If JSON parsing fails, try text
             const text = await response.text();
             errorMessage = text || errorMessage;
           }
@@ -112,19 +134,10 @@ export default function Home() {
   const handleReset = useCallback(() => {
     setSelectedFile(null);
     setFilePreview(null);
-    // Reset variables to defaults
-    if (preset) {
-      const defaults: VariableValues = {};
-      for (const varSchema of preset.variables_schema) {
-        if (varSchema.default !== undefined) {
-          defaults[varSchema.key] = varSchema.default;
-        }
-      }
-      setVariables(defaults);
-    }
+    resetVariables();
     setResult(null);
     setError(null);
-  }, [preset]);
+  }, [resetVariables]);
 
   const handleDownload = useCallback(() => {
     if (result?.outputUrl) {
@@ -136,120 +149,227 @@ export default function Home() {
   }, [result]);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navigation />
-      
-      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        {/* Header */}
-        <div className="text-center mb-8 lg:mb-12">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-            Product Photo Enhancer
-          </h1>
-          <p className="text-gray-600 text-sm sm:text-base">
-            Transform your product photos with AI-powered editing
-          </p>
-        </div>
+    <AnimatedGradientBackground>
+      <div className="min-h-screen flex flex-col">
+        <Navigation />
+        
+        <main className="flex-1">
+          {/* Hero Section */}
+          <section className="container pt-12 pb-8 md:pt-16 md:pb-10">
+            <div className="max-w-3xl mx-auto text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
+                Product Photo Enhancer
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
+                Turn quick phone photos into clean studio product images.
+              </p>
+              
+              {/* Trust Bullets */}
+              <div className="flex flex-wrap justify-center gap-4 md:gap-6 animate-in fade-in duration-500 delay-150">
+                <div className="trust-bullet">
+                  <ShieldCheck className="trust-bullet-icon" />
+                  <span>Preserves logos & details</span>
+                </div>
+                <div className="trust-bullet">
+                  <Lightbulb className="trust-bullet-icon" />
+                  <span>Studio lighting</span>
+                </div>
+                <div className="trust-bullet">
+                  <CheckCircle className="trust-bullet-icon" />
+                  <span>No distortions</span>
+                </div>
+              </div>
+            </div>
+          </section>
 
-        {/* Error Alert */}
-        {error && (
-          <div className="mb-6">
-            <Alert variant="destructive">
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          </div>
-        )}
+          {/* How It Works Accordion */}
+          <section className="container pb-8">
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+              <MagicCard className="max-w-2xl mx-auto p-6">
+                <div className="mb-4">
+                  <h2 className="text-base font-semibold text-foreground">How it works</h2>
+                  <p className="text-xs text-muted-foreground mt-1">Simple 4-step process to studio-quality images</p>
+                </div>
+                
+                <Accordion type="single">
+                  <AccordionItem value="upload">
+                    <AccordionTrigger>
+                      <span className="flex items-center gap-3">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">1</span>
+                        <span>Upload a photo</span>
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-sm text-muted-foreground pl-9">
+                        Drop in a phone photo. We keep the product's shape, logos, and all fine details intact.
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+                  
+                  <AccordionItem value="settings">
+                    <AccordionTrigger>
+                      <span className="flex items-center gap-3">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">2</span>
+                        <span>Choose the finish</span>
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-sm text-muted-foreground pl-9">
+                        Pick shadows and lighting style. These only affect the look, not the product geometry.
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+                  
+                  <AccordionItem value="enhance">
+                    <AccordionTrigger>
+                      <span className="flex items-center gap-3">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">3</span>
+                        <span>Enhance</span>
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-sm text-muted-foreground pl-9">
+                        We generate a clean studio version with controlled lighting and a seamless background.
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+                  
+                  <AccordionItem value="download">
+                    <AccordionTrigger>
+                      <span className="flex items-center gap-3">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">4</span>
+                        <span>Download</span>
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-sm text-muted-foreground pl-9">
+                        Grab the final image for listings, ads, or catalogs. High-resolution PNG ready to use.
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </MagicCard>
+            </div>
+          </section>
 
-        {/* 2-Column Layout: Desktop, Stacked: Mobile */}
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
-          {/* Left Column: Controls */}
-          <div className="space-y-6">
-            {/* Upload Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Upload Product Photo</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ImageUpload
-                  onFileSelect={handleFileSelect}
-                  preview={filePreview}
-                  disabled={isProcessing}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Settings Card */}
-            {preset && (
-              <Card>
-                <CardContent className="pt-6">
-                  <VariableControls
-                    preset={preset}
-                    variables={variables}
-                    onChange={handleVariableChange}
-                    disabled={isProcessing}
-                  />
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Enhance Button */}
-            <button
-              onClick={handleEnhance}
-              disabled={!selectedFile || !preset || isProcessing}
-              className="w-full btn btn-primary flex items-center justify-center gap-2 h-12 text-base font-medium"
-            >
-              {isProcessing ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Enhancing...
-                </>
-              ) : (
-                <>
-                  <Wand2 className="w-5 h-5" />
-                  Enhance Photo
-                </>
-              )}
-            </button>
-
-            {/* Reset Button (only show when there's a result) */}
-            {result && (
-              <button
-                onClick={handleReset}
-                className="w-full btn btn-secondary"
-                disabled={isProcessing}
-              >
-                Create Another
-              </button>
-            )}
-          </div>
-
-          {/* Right Column: Results */}
-          <div ref={resultsRef}>
-            <BeforeAfterPreview
-              beforeUrl={filePreview}
-              afterUrl={result?.outputUrl || null}
-              onDownload={result ? handleDownload : undefined}
-              isProcessing={isProcessing}
-            />
-            
-            {/* Download Link */}
-            {result && (
-              <div className="mt-4 text-center">
-                <a
-                  href={result.outputUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-primary hover:underline"
-                >
-                  Download full resolution →
-                </a>
+          {/* Main Content Grid */}
+          <section className="container pb-12">
+            {/* Error Alert */}
+            {error && (
+              <div className="mb-6 max-w-6xl mx-auto">
+                <Alert variant="destructive">
+                  <AlertTitle>Something went wrong</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               </div>
             )}
-          </div>
-        </div>
-      </main>
 
-      <Footer />
-    </div>
+            <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
+              {/* Left Column: Controls */}
+              <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-500 delay-300">
+                {/* Upload Card */}
+                <MagicCard className="p-6">
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-primary/10">
+                        <Upload className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <h2 className="text-base font-semibold text-foreground">Upload Product Photo</h2>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      JPEG, PNG, or WebP • Max 10MB
+                    </p>
+                  </div>
+                  <ImageUpload
+                    onFileSelect={handleFileSelect}
+                    preview={filePreview}
+                    disabled={isProcessing}
+                  />
+                </MagicCard>
+
+                {/* Settings Card */}
+                {preset && (
+                  <MagicCard className="p-6">
+                    <VariableControls
+                      preset={preset}
+                      variables={variables}
+                      onChange={handleVariableChange}
+                      onReset={resetVariables}
+                      disabled={isProcessing}
+                    />
+                  </MagicCard>
+                )}
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <button
+                    onClick={handleEnhance}
+                    disabled={!selectedFile || !preset || isProcessing}
+                    className={cn(
+                      "w-full h-12 text-base btn-magic-primary",
+                      "transition-opacity duration-200",
+                      (!selectedFile || !preset || isProcessing) && "opacity-50"
+                    )}
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Enhancing...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5" />
+                        Enhance Photo
+                      </>
+                    )}
+                  </button>
+
+                  {result && (
+                    <button
+                      onClick={handleReset}
+                      className="w-full btn-secondary h-11 animate-in fade-in duration-200"
+                      disabled={isProcessing}
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      Create Another
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column: Results */}
+              <div 
+                ref={resultsRef}
+                className="animate-in fade-in slide-in-from-right-4 duration-500 delay-400"
+              >
+                <BeforeAfterPreview
+                  beforeUrl={filePreview}
+                  afterUrl={result?.outputUrl || null}
+                  onDownload={result ? handleDownload : undefined}
+                  isProcessing={isProcessing}
+                />
+                
+                {/* Download Link */}
+                {result && (
+                  <div className="mt-4 text-center animate-in fade-in duration-200 delay-200">
+                    <a
+                      href={result.outputUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+                    >
+                      Open full resolution
+                      <span aria-hidden="true">→</span>
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <Footer />
+      </div>
+    </AnimatedGradientBackground>
   );
 }

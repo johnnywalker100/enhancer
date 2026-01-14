@@ -31,7 +31,7 @@ interface TabsListProps {
 
 export function TabsList({ children, className = '' }: TabsListProps) {
   return (
-    <div className={`inline-flex h-10 items-center justify-center rounded-lg bg-gray-100 p-1 ${className}`}>
+    <div className={`inline-flex h-11 sm:h-10 items-center justify-center rounded-lg bg-gray-100 p-1 ${className}`}>
       {children}
     </div>
   );
@@ -54,11 +54,12 @@ export function TabsTrigger({ value, children, className = '' }: TabsTriggerProp
       type="button"
       onClick={() => context.onValueChange(value)}
       className={`
-        inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium 
+        inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-2 sm:py-1.5 text-sm font-medium 
         ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
+        touch-manipulation min-h-[40px] sm:min-h-0
         ${isActive 
           ? 'bg-white text-gray-900 shadow-sm' 
-          : 'text-gray-600 hover:text-gray-900'
+          : 'text-gray-600 active:text-gray-900'
         }
         ${className}
       `}

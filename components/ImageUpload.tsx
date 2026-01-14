@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useCallback, DragEvent } from 'react';
-import { Upload, Image as ImageIcon } from 'lucide-react';
+import { Upload, RefreshCw } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ImageUploadProps {
   onFileSelect: (file: File) => void;
@@ -40,56 +41,102 @@ export default function ImageUpload({ onFileSelect, preview, disabled }: ImageUp
     }
   }, [onFileSelect, disabled]);
 
+  const openFilePicker = () => {
+    if (!disabled) {
+      document.getElementById('file-input')?.click();
+    }
+  };
+
+  // Show preview when image is selected
+  if (preview) {
+    return (
+      <div className="space-y-3 animate-in fade-in duration-200">
+        <div 
+          className={cn(
+            "relative group cursor-pointer rounded-xl overflow-hidden bg-muted/20 border border-border/50",
+            "transition-all duration-200 hover:border-border",
+            disabled && "opacity-50 cursor-not-allowed"
+          )}
+          onClick={openFilePicker}
+        >
+          <img 
+            src={preview} 
+            alt="Selected product" 
+            className="w-full max-h-64 object-contain"
+          />
+          
+          {/* Hover overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-center">
+              <span className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/20 backdrop-blur-sm text-white text-sm font-medium">
+                <RefreshCw className="w-4 h-4" />
+                Replace image
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <p className="text-center text-sm text-muted-foreground">
+          Click image to replace
+        </p>
+        
+        <input
+          id="file-input"
+          type="file"
+          accept="image/jpeg,image/jpg,image/png,image/webp"
+          onChange={handleFileInput}
+          disabled={disabled}
+          className="hidden"
+          aria-label="Upload image file"
+        />
+      </div>
+    );
+  }
+
+  // Empty upload zone
   return (
     <div>
       <div
-        className={`
-          relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer
-          transition-all duration-200
-          ${isDragging 
-            ? 'border-primary bg-primary/5' 
-            : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-          }
-          ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-          ${preview ? 'p-4' : ''}
-        `}
+        className={cn(
+          "upload-zone p-8 text-center cursor-pointer min-h-[180px] flex items-center justify-center",
+          "transition-all duration-200",
+          isDragging && "dragging",
+          disabled && "opacity-50 cursor-not-allowed"
+        )}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => !disabled && document.getElementById('file-input')?.click()}
+        onClick={openFilePicker}
       >
-        {preview ? (
-          <div className="space-y-3">
-            <div className="relative inline-block">
-              <img 
-                src={preview} 
-                alt="Preview" 
-                className="max-w-full max-h-64 rounded-lg mx-auto object-contain"
-              />
-            </div>
-            <p className="text-sm text-gray-600">
-              Click or drag to replace
+        <div className="flex flex-col items-center gap-4">
+          {/* Upload icon */}
+          <div 
+            className={cn(
+              "rounded-2xl p-4 transition-all duration-200",
+              isDragging ? "bg-primary/20 scale-110" : "bg-muted/50"
+            )}
+          >
+            <Upload className={cn(
+              "w-8 h-8 transition-colors duration-200",
+              isDragging ? "text-primary" : "text-muted-foreground"
+            )} />
+          </div>
+          
+          <div className="space-y-2">
+            <p className="text-base font-medium text-foreground">
+              Drop your product image here
+            </p>
+            <p className="text-sm text-muted-foreground">
+              or <span className="text-primary font-medium cursor-pointer hover:underline">browse</span> to upload
             </p>
           </div>
-        ) : (
-          <div className="space-y-3">
-            <div className="flex justify-center">
-              <div className="rounded-full bg-gray-100 p-3">
-                <Upload className="w-6 h-6 text-gray-600" />
-              </div>
-            </div>
-            <div>
-              <p className="text-base font-medium text-gray-900 mb-1">
-                Drag and drop your image here
-              </p>
-              <p className="text-sm text-gray-600 mb-2">or click to browse</p>
-              <p className="text-xs text-gray-500">
-                Supports: JPEG, PNG, WebP (max 10MB)
-              </p>
-            </div>
-          </div>
-        )}
+          
+          <p className="text-xs text-muted-foreground/80">
+            JPEG, PNG, or WebP • Max 10MB
+          </p>
+        </div>
       </div>
+      
       <input
         id="file-input"
         type="file"
