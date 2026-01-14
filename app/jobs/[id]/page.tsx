@@ -153,12 +153,20 @@ export default function JobDetailPage() {
     .filter(([, value]) => value === true)
     .map(([key]) => SETTING_LABELS[key] || key.replace(/_/g, ' '));
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (job.output_image_url) {
-      const link = document.createElement('a');
-      link.href = job.output_image_url;
-      link.download = 'enhanced-image.png';
-      link.click();
+      try {
+        // Use the download API to properly handle cross-origin images
+        const downloadUrl = `/api/download?url=${encodeURIComponent(job.output_image_url)}&filename=enhanced-image.png`;
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = 'enhanced-image.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error('Download failed:', error);
+      }
     }
   };
 

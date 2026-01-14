@@ -137,12 +137,20 @@ export default function Home() {
     setError(null);
   }, [resetVariables]);
 
-  const handleDownload = useCallback(() => {
+  const handleDownload = useCallback(async () => {
     if (result?.outputUrl) {
-      const link = document.createElement('a');
-      link.href = result.outputUrl;
-      link.download = 'enhanced-image.png';
-      link.click();
+      try {
+        // Use the download API to properly handle cross-origin images
+        const downloadUrl = `/api/download?url=${encodeURIComponent(result.outputUrl)}&filename=enhanced-image.png`;
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = 'enhanced-image.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error('Download failed:', error);
+      }
     }
   }, [result]);
 
