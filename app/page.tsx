@@ -130,7 +130,7 @@ export default function Home() {
     } finally {
       setIsProcessing(false);
     }
-  }, [selectedFile, preset, variables]);
+  }, [selectedFile, preset, variables, aspectRatio]);
 
   const handleReset = useCallback(() => {
     setSelectedFile(null);
