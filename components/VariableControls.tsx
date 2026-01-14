@@ -16,18 +16,58 @@ interface VariableControlsProps {
   onAspectRatioChange?: (value: string) => void;
 }
 
+// Aspect ratio icon component
+const AspectRatioIcon = ({ ratio }: { ratio: string }) => {
+  const dimensions: Record<string, { width: number; height: number }> = {
+    'auto': { width: 20, height: 20 },
+    '1:1': { width: 20, height: 20 },
+    '4:3': { width: 20, height: 15 },
+    '16:9': { width: 24, height: 13.5 },
+    '21:9': { width: 24, height: 10 },
+    '5:4': { width: 20, height: 16 },
+    '3:2': { width: 21, height: 14 },
+    '2:3': { width: 14, height: 21 },
+    '9:16': { width: 13.5, height: 24 },
+    '3:4': { width: 15, height: 20 },
+    '4:5': { width: 16, height: 20 },
+  };
+
+  const dim = dimensions[ratio] || { width: 20, height: 20 };
+
+  // Auto gets a special icon with dashed border
+  if (ratio === 'auto') {
+    return (
+      <div className="w-7 h-7 flex items-center justify-center">
+        <div 
+          className="border-2 border-dashed border-muted-foreground rounded"
+          style={{ width: dim.width, height: dim.height }}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-7 h-7 flex items-center justify-center">
+      <div 
+        className="border-2 border-foreground rounded"
+        style={{ width: dim.width, height: dim.height }}
+      />
+    </div>
+  );
+};
+
 const ASPECT_RATIO_OPTIONS = [
-  { value: 'auto', label: 'Auto' },
-  { value: '1:1', label: '1:1 (Square)' },
-  { value: '4:3', label: '4:3' },
-  { value: '16:9', label: '16:9 (Landscape)' },
-  { value: '21:9', label: '21:9 (Ultrawide)' },
-  { value: '5:4', label: '5:4' },
-  { value: '3:2', label: '3:2' },
-  { value: '2:3', label: '2:3 (Portrait)' },
-  { value: '9:16', label: '9:16 (Vertical)' },
-  { value: '3:4', label: '3:4' },
-  { value: '4:5', label: '4:5' },
+  { value: 'auto', label: 'Auto', icon: <AspectRatioIcon ratio="auto" /> },
+  { value: '1:1', label: '1:1', icon: <AspectRatioIcon ratio="1:1" /> },
+  { value: '4:3', label: '4:3', icon: <AspectRatioIcon ratio="4:3" /> },
+  { value: '16:9', label: '16:9', icon: <AspectRatioIcon ratio="16:9" /> },
+  { value: '21:9', label: '21:9', icon: <AspectRatioIcon ratio="21:9" /> },
+  { value: '5:4', label: '5:4', icon: <AspectRatioIcon ratio="5:4" /> },
+  { value: '3:2', label: '3:2', icon: <AspectRatioIcon ratio="3:2" /> },
+  { value: '2:3', label: '2:3', icon: <AspectRatioIcon ratio="2:3" /> },
+  { value: '9:16', label: '9:16', icon: <AspectRatioIcon ratio="9:16" /> },
+  { value: '3:4', label: '3:4', icon: <AspectRatioIcon ratio="3:4" /> },
+  { value: '4:5', label: '4:5', icon: <AspectRatioIcon ratio="4:5" /> },
 ];
 
 // Mapping for improved labels and helper text

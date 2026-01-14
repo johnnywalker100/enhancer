@@ -2,12 +2,18 @@
 
 import { cn } from '@/lib/utils';
 import { Check, ChevronDown } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, ReactNode } from 'react';
+
+interface SelectOption {
+  value: string;
+  label: string;
+  icon?: ReactNode;
+}
 
 interface SelectProps {
   value: string;
   onValueChange: (value: string) => void;
-  options: { value: string; label: string }[];
+  options: SelectOption[];
   disabled?: boolean;
   placeholder?: string;
 }
@@ -47,14 +53,21 @@ export function Select({ value, onValueChange, options, disabled, placeholder = 
           isOpen && "ring-2 ring-primary/20"
         )}
       >
-        <span className={cn(
-          "truncate",
-          !selectedOption && "text-muted-foreground"
-        )}>
-          {selectedOption?.label || placeholder}
-        </span>
+        <div className="flex items-center gap-2 min-w-0">
+          {selectedOption?.icon && (
+            <div className="flex-shrink-0">
+              {selectedOption.icon}
+            </div>
+          )}
+          <span className={cn(
+            "truncate",
+            !selectedOption && "text-muted-foreground"
+          )}>
+            {selectedOption?.label || placeholder}
+          </span>
+        </div>
         <ChevronDown className={cn(
-          "w-4 h-4 text-muted-foreground transition-transform duration-200",
+          "w-4 h-4 text-muted-foreground transition-transform duration-200 flex-shrink-0",
           isOpen && "rotate-180"
         )} />
       </button>
@@ -75,9 +88,16 @@ export function Select({ value, onValueChange, options, disabled, placeholder = 
                 value === option.value && "bg-primary/5"
               )}
             >
-              <span>{option.label}</span>
+              <div className="flex items-center gap-2 min-w-0">
+                {option.icon && (
+                  <div className="flex-shrink-0">
+                    {option.icon}
+                  </div>
+                )}
+                <span className="truncate">{option.label}</span>
+              </div>
               {value === option.value && (
-                <Check className="w-4 h-4 text-primary" />
+                <Check className="w-4 h-4 text-primary flex-shrink-0" />
               )}
             </button>
           ))}
