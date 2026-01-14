@@ -260,8 +260,8 @@ export default function Home() {
 
           {/* Example Showcase Section */}
           <ExampleShowcase
-            beforeImage="/uploads/example-before.png"
-            afterImage="/uploads/example-after.png"
+            beforeImage="/examples/example-before.png"
+            afterImage="/examples/example-after.png"
             title="See the transformation"
             description="Real example showing how we enhance product photos"
           />
