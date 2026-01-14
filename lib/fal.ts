@@ -61,25 +61,23 @@ export async function enhanceImage(options: FalEnhanceOptions): Promise<FalEnhan
       output_format: options.output_format || 'png',
     };
     
-    // Map aspect_ratio to fal.ai image_size presets or custom dimensions
+    // Map aspect_ratio to fal.ai image_size with explicit dimensions
     if (options.aspect_ratio && options.aspect_ratio !== 'auto') {
-      const aspectRatioMap: Record<string, string | { width: number; height: number }> = {
-        // Preset mappings (preferred)
-        '1:1': 'square_hd',           // 1328x1328
-        '4:3': 'landscape_4_3',       // 1365x1024
-        '16:9': 'landscape_16_9',     // 1820x1024
-        '3:4': 'portrait_4_3',        // 1024x1365
-        '9:16': 'portrait_16_9',      // 1024x1820
-        
-        // Custom dimensions for unsupported ratios
-        '21:9': { width: 2048, height: 878 },   // ultrawide
-        '5:4': { width: 1280, height: 1024 },   // classic monitor
-        '3:2': { width: 1536, height: 1024 },   // photography standard
-        '2:3': { width: 1024, height: 1536 },   // portrait photography
-        '4:5': { width: 1024, height: 1280 },   // Instagram portrait
+      const aspectRatioMap: Record<string, { width: number; height: number }> = {
+        // Always use explicit dimensions for precise control
+        '1:1': { width: 1024, height: 1024 },    // square
+        '4:3': { width: 1365, height: 1024 },    // landscape
+        '16:9': { width: 1820, height: 1024 },   // widescreen
+        '3:4': { width: 1024, height: 1365 },    // portrait
+        '9:16': { width: 1024, height: 1820 },   // vertical video
+        '21:9': { width: 2048, height: 878 },    // ultrawide
+        '5:4': { width: 1280, height: 1024 },    // classic
+        '3:2': { width: 1536, height: 1024 },    // photo
+        '2:3': { width: 1024, height: 1536 },    // portrait photo
+        '4:5': { width: 1024, height: 1280 },    // Instagram portrait
       };
       
-      const imageSize = aspectRatioMap[options.aspect_ratio] || 'square_hd';
+      const imageSize = aspectRatioMap[options.aspect_ratio] || { width: 1024, height: 1024 };
       input.image_size = imageSize;
       console.log('Image size set in fal.ai input:', JSON.stringify(imageSize), 'for aspect ratio:', options.aspect_ratio);
     } else {
