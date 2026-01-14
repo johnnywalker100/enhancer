@@ -38,7 +38,9 @@ export async function enhanceImage(options: FalEnhanceOptions): Promise<FalEnhan
     if (options.image_buffer) {
       console.log('Uploading image to fal.ai storage...');
       const mimetype = options.image_mimetype || 'image/png';
-      const blob = new Blob([options.image_buffer], { type: mimetype });
+      // Convert Buffer to Uint8Array for Blob compatibility
+      const uint8Array = new Uint8Array(options.image_buffer);
+      const blob = new Blob([uint8Array], { type: mimetype });
       const uploadedUrl = await fal.storage.upload(blob);
       console.log('Image uploaded to:', uploadedUrl);
       imageUrls = [uploadedUrl];
