@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const presetId = formData.get('preset_id') as string;
     const variablesJson = formData.get('variables') as string;
+    const aspectRatio = formData.get('aspect_ratio') as string;
     const imageFile = formData.get('image') as File;
     
     if (!presetId) {
@@ -83,12 +84,19 @@ export async function POST(request: NextRequest) {
     // For MVP: synchronous processing (can upgrade to async/queue later)
     try {
       // Upload image directly to fal.ai storage (no local file system needed)
-      const falResult = await enhanceImage({
+      const enhanceOptions: any = {
         prompt: compiled.prompt_string,
         image_buffer: validatedFile.buffer,
         image_mimetype: validatedFile.mimetype,
         ...compiled.fal_options,
-      });
+      };
+      
+      // Add aspect ratio if provided and not 'auto'
+      if (aspectRatio && aspectRatio !== 'auto') {
+        enhanceOptions.aspect_ratio = aspectRatio;
+      }
+      
+      const falResult = await enhanceImage(enhanceOptions);
       
       // Get output image URL
       const outputImageUrl = falResult.images?.[0]?.url || null;

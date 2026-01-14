@@ -26,6 +26,7 @@ export default function Home() {
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [preset] = useState<Preset | null>(() => getPreset('luxury-studio-mvp') ?? null);
   const [variables, setVariables] = useState<VariableValues>({});
+  const [aspectRatio, setAspectRatio] = useState<string>('auto');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ outputUrl: string; requestId?: string } | null>(null);
@@ -67,6 +68,7 @@ export default function Home() {
         }
       }
       setVariables(defaults);
+      setAspectRatio('auto');
     }
   }, [preset]);
 
@@ -85,6 +87,7 @@ export default function Home() {
       formData.append('image', selectedFile);
       formData.append('preset_id', preset.id);
       formData.append('variables', JSON.stringify(variables));
+      formData.append('aspect_ratio', aspectRatio);
 
       const response = await fetch('/api/enhance', {
         method: 'POST',
@@ -261,6 +264,8 @@ export default function Home() {
                         onChange={handleVariableChange}
                         onReset={resetVariables}
                         disabled={isProcessing}
+                        aspectRatio={aspectRatio}
+                        onAspectRatioChange={setAspectRatio}
                       />
                     </div>
                   )}

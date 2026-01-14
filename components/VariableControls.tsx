@@ -2,8 +2,9 @@
 
 import { Preset, VariableValues, VariableSchema } from '@/lib/types';
 import { Switch } from './ui/Switch';
+import { Select } from './ui/Select';
 import { cn } from '@/lib/utils';
-import { Sparkles, RotateCcw } from 'lucide-react';
+import { Sparkles, RotateCcw, Ratio } from 'lucide-react';
 
 interface VariableControlsProps {
   preset: Preset;
@@ -11,7 +12,23 @@ interface VariableControlsProps {
   onChange: (key: string, value: any) => void;
   onReset?: () => void;
   disabled?: boolean;
+  aspectRatio?: string;
+  onAspectRatioChange?: (value: string) => void;
 }
+
+const ASPECT_RATIO_OPTIONS = [
+  { value: 'auto', label: 'Auto' },
+  { value: '1:1', label: '1:1 (Square)' },
+  { value: '4:3', label: '4:3' },
+  { value: '16:9', label: '16:9 (Landscape)' },
+  { value: '21:9', label: '21:9 (Ultrawide)' },
+  { value: '5:4', label: '5:4' },
+  { value: '3:2', label: '3:2' },
+  { value: '2:3', label: '2:3 (Portrait)' },
+  { value: '9:16', label: '9:16 (Vertical)' },
+  { value: '3:4', label: '3:4' },
+  { value: '4:5', label: '4:5' },
+];
 
 // Mapping for improved labels and helper text
 const SETTING_INFO: Record<string, { label: string; helper: string }> = {
@@ -37,7 +54,15 @@ const SETTING_INFO: Record<string, { label: string; helper: string }> = {
   },
 };
 
-export default function VariableControls({ preset, variables, onChange, onReset, disabled }: VariableControlsProps) {
+export default function VariableControls({ 
+  preset, 
+  variables, 
+  onChange, 
+  onReset, 
+  disabled,
+  aspectRatio = 'auto',
+  onAspectRatioChange
+}: VariableControlsProps) {
   const handleToggle = (key: string, checked: boolean) => {
     // Mutual exclusivity: if enabling floating shadow, disable contact shadow and vice versa
     if (key === 'floating_product_with_drop_shadow' && checked) {
@@ -105,6 +130,28 @@ export default function VariableControls({ preset, variables, onChange, onReset,
           Lighting & background only. Product shape and branding are preserved.
         </p>
       </div>
+
+      {/* Aspect Ratio Selector */}
+      {onAspectRatioChange && (
+        <div className="pb-4 border-b border-border/40">
+          <div className="flex items-center gap-2 mb-2">
+            <Ratio className="w-4 h-4 text-muted-foreground" />
+            <label className="text-sm font-medium text-foreground">
+              Aspect Ratio
+            </label>
+          </div>
+          <Select
+            value={aspectRatio}
+            onValueChange={onAspectRatioChange}
+            options={ASPECT_RATIO_OPTIONS}
+            disabled={disabled}
+            placeholder="Select aspect ratio"
+          />
+          <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+            Choose the output image dimensions. Auto maintains original aspect ratio.
+          </p>
+        </div>
+      )}
 
       {/* Controls */}
       <div>
