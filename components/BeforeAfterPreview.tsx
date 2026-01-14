@@ -80,8 +80,8 @@ export function BeforeAfterPreview({ beforeUrl, afterUrl, onDownload, isProcessi
         </div>
       </div>
 
-      {/* Mobile: Tabs */}
-      <div className="block md:hidden mb-3 sm:mb-4">
+      {/* Toggle between Before/After */}
+      <div className="mb-3 sm:mb-4">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'before' | 'after')}>
           <TabsList className="w-full grid grid-cols-2">
             <TabsTrigger value="before" className="flex-1 text-xs sm:text-sm">Before</TabsTrigger>
@@ -99,43 +99,17 @@ export function BeforeAfterPreview({ beforeUrl, afterUrl, onDownload, isProcessi
             )}
           </TabsContent>
           <TabsContent value="after" className="mt-3 sm:mt-4 animate-in fade-in duration-150">
-            <div className="image-preview-container aspect-[4/3] sm:aspect-square rounded-lg sm:rounded-xl">
+            <div className="image-preview-container aspect-[4/3] sm:aspect-square rounded-lg sm:rounded-xl relative group">
               <img
                 src={afterUrl}
                 alt="After enhancement"
                 className="w-full h-full object-contain"
               />
+              {/* Subtle hover glow */}
+              <div className="absolute inset-0 rounded-lg sm:rounded-xl ring-2 ring-primary/0 group-hover:ring-primary/20 transition-all duration-200" />
             </div>
           </TabsContent>
         </Tabs>
-      </div>
-
-      {/* Desktop: Side by side */}
-      <div className="hidden md:grid md:grid-cols-2 gap-4 mb-4 sm:mb-5">
-        <div className="animate-in fade-in slide-in-from-left-2 duration-200">
-          <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mb-1.5 sm:mb-2 uppercase tracking-wider">Before</p>
-          {beforeUrl && (
-            <div className="image-preview-container aspect-square rounded-lg sm:rounded-xl">
-              <img
-                src={beforeUrl}
-                alt="Before enhancement"
-                className="w-full h-full object-contain"
-              />
-            </div>
-          )}
-        </div>
-        <div className="animate-in fade-in slide-in-from-right-2 duration-200 delay-75">
-          <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mb-1.5 sm:mb-2 uppercase tracking-wider">After</p>
-          <div className="image-preview-container aspect-square relative group rounded-lg sm:rounded-xl">
-            <img
-              src={afterUrl}
-              alt="After enhancement"
-              className="w-full h-full object-contain"
-            />
-            {/* Subtle hover glow */}
-            <div className="absolute inset-0 rounded-lg sm:rounded-xl ring-2 ring-primary/0 group-hover:ring-primary/20 transition-all duration-200" />
-          </div>
-        </div>
       </div>
 
       {onDownload && (
