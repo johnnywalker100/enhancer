@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Pipette, ChevronDown } from 'lucide-react';
+import { Pipette, ChevronDown, Plus } from 'lucide-react';
 import { HexColorPicker } from 'react-colorful';
 import { cn } from '@/lib/utils';
 
@@ -12,7 +12,7 @@ interface ColorPickerProps {
   label?: string;
 }
 
-const PRESET_COLORS = [
+const DEFAULT_COLORS = [
   '#ffffff',
   '#f5f5f5',
   '#e0e0e0',
@@ -23,6 +23,8 @@ const PRESET_COLORS = [
   '#16a34a',
   '#dc2626',
 ];
+
+const STORAGE_KEY = 'colorpicker-saved-colors';
 
 function normalizeHex(input: string) {
   let v = input.trim();
@@ -36,7 +38,23 @@ function isValidHex6(v: string) {
 export function ColorPicker({ value, onChange, disabled, label }: ColorPickerProps) {
   const [open, setOpen] = React.useState(false);
   const [draft, setDraft] = React.useState(value);
+  const [savedColors, setSavedColors] = React.useState<string[]>([]);
   const ref = React.useRef<HTMLDivElement>(null);
+
+  // Load saved colors from localStorage
+  React.useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          setSavedColors(parsed);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load saved colors:', e);
+    }
+  }, []);
 
   React.useEffect(() => setDraft(value), [value]);
 
@@ -68,6 +86,29 @@ export function ColorPicker({ value, onChange, disabled, label }: ColorPickerPro
       // user canceled
     }
   };
+
+  const addCurrentColor = () => {
+    if (!isValidHex6(value)) return;
+    const normalized = value.toLowerCase();
+    
+    // Check if color already exists in saved or default colors
+    if (savedColors.includes(normalized) || DEFAULT_COLORS.map(c => c.toLowerCase()).includes(normalized)) {
+      return;
+    }
+
+    const newSaved = [...savedColors, normalized];
+    setSavedColors(newSaved);
+    
+    // Save to localStorage
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newSaved));
+    } catch (e) {
+      console.error('Failed to save color:', e);
+    }
+  };
+
+  // Combine default and saved colors
+  const allColors = [...DEFAULT_COLORS, ...savedColors];
 
   return (
     <div className="w-full" ref={ref}>
@@ -183,19 +224,25 @@ export function ColorPicker({ value, onChange, disabled, label }: ColorPickerPro
               <div className="text-xs font-medium text-muted-foreground">Saved colors</div>
               <button
                 type="button"
-                className="text-xs font-medium text-primary hover:opacity-80"
-                onClick={() => setColor('#4397EB')}
+                className={cn(
+                  'flex items-center gap-1 text-xs font-medium text-primary hover:opacity-80 transition',
+                  !isValidHex6(value) && 'opacity-50 cursor-not-allowed'
+                )}
+                onClick={addCurrentColor}
+                disabled={!isValidHex6(value)}
+                title="Add current color to saved colors"
               >
-                Reset
+                <Plus className="h-3 w-3" />
+                Add new color
               </button>
             </div>
 
             <div className="grid grid-cols-9 gap-2">
-              {PRESET_COLORS.map((c) => {
+              {allColors.map((c, idx) => {
                 const active = value.toLowerCase() === c.toLowerCase();
                 return (
                   <button
-                    key={c}
+                    key={`${c}-${idx}`}
                     type="button"
                     onClick={() => setColor(c)}
                     className={cn(
