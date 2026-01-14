@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Job } from '@/lib/db';
+import { Navigation, Footer } from '@/components/Navigation';
+import { Card } from '@/components/ui/Card';
+import { Plus, Clock, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -32,105 +35,134 @@ export default function JobsPage() {
   };
 
   const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleString();
+    return new Date(timestamp).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
   };
 
-  const getStatusBadgeClass = (status: string) => {
-    return `status-badge status-${status}`;
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case 'complete':
+        return { icon: CheckCircle, className: 'status-complete', label: 'Complete' };
+      case 'processing':
+        return { icon: Loader2, className: 'status-processing', label: 'Processing' };
+      case 'failed':
+        return { icon: XCircle, className: 'status-failed', label: 'Failed' };
+      default:
+        return { icon: Clock, className: 'status-queued', label: 'Queued' };
+    }
   };
-
-  if (loading) {
-    return (
-      <div className="container" style={{ paddingTop: '40px', paddingBottom: '40px' }}>
-        <p>Loading jobs...</p>
-      </div>
-    );
-  }
 
   return (
-    <div className="container" style={{ paddingTop: '40px', paddingBottom: '40px' }}>
-      <header style={{ marginBottom: '40px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1 style={{ fontSize: '32px', fontWeight: 'bold' }}>Job History</h1>
-          <Link href="/" className="btn btn-primary">
-            Create New Enhancement
+    <div className="min-h-screen flex flex-col">
+      <Navigation />
+      
+      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Job History</h1>
+            <p className="text-gray-600 text-sm">View and manage your enhancement jobs</p>
+          </div>
+          <Link href="/" className="btn btn-primary flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">New Enhancement</span>
+            <span className="sm:hidden">New</span>
           </Link>
         </div>
-      </header>
 
-      {error && (
-        <div className="card" style={{ background: '#f8d7da', color: '#721c24' }}>
-          <strong>Error:</strong> {error}
-        </div>
-      )}
+        {error && (
+          <Card className="mb-6 border-red-200 bg-red-50">
+            <div className="text-red-900">
+              <strong>Error:</strong> {error}
+            </div>
+          </Card>
+        )}
 
-      {jobs.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <p style={{ fontSize: '18px', color: '#666', marginBottom: '20px' }}>
-            No jobs yet. Create your first enhancement!
-          </p>
-          <Link href="/" className="btn btn-primary">
-            Get Started
-          </Link>
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gap: '16px' }}>
-          {jobs.map((job) => (
-            <Link
-              key={job.id}
-              href={`/jobs/${job.id}`}
-              className="card"
-              style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
-            >
-              <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr auto', gap: '20px', alignItems: 'center' }}>
-                <div>
-                  {job.output_image_url ? (
-                    <img
-                      src={job.output_image_url}
-                      alt="Output"
-                      style={{
-                        width: '100%',
-                        height: '80px',
-                        objectFit: 'cover',
-                        borderRadius: '8px',
-                      }}
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        width: '100%',
-                        height: '80px',
-                        background: '#f0f0f0',
-                        borderRadius: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#999',
-                      }}
-                    >
-                      {job.status === 'processing' ? 'Processing...' : 'No image'}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <h3 style={{ marginBottom: '8px' }}>Job {job.id.slice(0, 8)}</h3>
-                  <p style={{ color: '#666', fontSize: '14px', marginBottom: '4px' }}>
-                    Preset: {job.preset_id}
-                  </p>
-                  <p style={{ color: '#666', fontSize: '14px' }}>
-                    Created: {formatDate(job.created_at)}
-                  </p>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <span className={getStatusBadgeClass(job.status)}>
-                    {job.status}
-                  </span>
-                </div>
-              </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+          </div>
+        ) : jobs.length === 0 ? (
+          <Card className="text-center py-12">
+            <p className="text-gray-600 mb-4">No jobs yet. Create your first enhancement!</p>
+            <Link href="/" className="btn btn-primary inline-flex items-center gap-2">
+              <Plus className="w-4 h-4" />
+              Get Started
             </Link>
-          ))}
-        </div>
-      )}
+          </Card>
+        ) : (
+          <div className="grid gap-4">
+            {jobs.map((job) => {
+              const statusConfig = getStatusConfig(job.status);
+              const StatusIcon = statusConfig.icon;
+              
+              return (
+                <Link
+                  key={job.id}
+                  href={`/jobs/${job.id}`}
+                  className="block"
+                >
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="flex gap-4 items-center">
+                      {/* Thumbnail */}
+                      <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                        {job.output_image_url ? (
+                          <img
+                            src={job.output_image_url}
+                            alt="Output"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400">
+                            {job.status === 'processing' ? (
+                              <Loader2 className="w-6 h-6 animate-spin" />
+                            ) : (
+                              <Clock className="w-6 h-6" />
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-4 mb-2">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-900 truncate">
+                              {job.preset_id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {formatDate(job.created_at)}
+                            </p>
+                          </div>
+                          <div className="flex-shrink-0">
+                            <span className={`status-badge ${statusConfig.className} flex items-center gap-1.5`}>
+                              {statusConfig.icon === Loader2 ? (
+                                <StatusIcon className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <StatusIcon className="w-3 h-3" />
+                              )}
+                              {statusConfig.label}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-500 truncate">
+                          Job ID: {job.id.slice(0, 8)}...
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </main>
+
+      <Footer />
     </div>
   );
 }

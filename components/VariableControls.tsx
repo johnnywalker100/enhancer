@@ -1,146 +1,97 @@
 'use client';
 
 import { Preset, VariableValues, VariableSchema } from '@/lib/types';
+import { Switch } from './ui/Switch';
+import { Sparkles } from 'lucide-react';
 
 interface VariableControlsProps {
   preset: Preset;
   variables: VariableValues;
   onChange: (key: string, value: any) => void;
+  disabled?: boolean;
 }
 
-export default function VariableControls({ preset, variables, onChange }: VariableControlsProps) {
+// Mapping for improved labels and helper text
+const SETTING_INFO: Record<string, { label: string; helper: string }> = {
+  soft_shadow_beneath_product: {
+    label: 'Contact Shadow (Subtle)',
+    helper: 'Adds a soft grounding shadow under the product.',
+  },
+  floating_product_with_drop_shadow: {
+    label: 'Floating Look (Drop Shadow)',
+    helper: 'Makes the product appear lifted with a defined drop shadow.',
+  },
+  luxury_brand_aesthetic: {
+    label: 'Premium Lighting & Contrast',
+    helper: 'Slightly richer contrast and controlled highlights for a high-end look.',
+  },
+  ecommerce_ready: {
+    label: 'Listing Ready (Marketplace Clean)',
+    helper: 'Neutral color, clean edges, simple background for e-commerce listings.',
+  },
+  minimal_apple_style_lighting: {
+    label: 'Minimal Soft Studio (Tech-Ad Look)',
+    helper: 'Even, soft lighting with smooth highlights and a minimal feel.',
+  },
+};
+
+export default function VariableControls({ preset, variables, onChange, disabled }: VariableControlsProps) {
+  const handleToggle = (key: string, checked: boolean) => {
+    // Mutual exclusivity: if enabling floating shadow, disable contact shadow and vice versa
+    if (key === 'floating_product_with_drop_shadow' && checked) {
+      onChange('soft_shadow_beneath_product', false);
+    }
+    if (key === 'soft_shadow_beneath_product' && checked) {
+      onChange('floating_product_with_drop_shadow', false);
+    }
+    onChange(key, checked);
+  };
+
   const renderControl = (varSchema: VariableSchema) => {
     const value = variables[varSchema.key] ?? varSchema.default;
     const key = varSchema.key;
+    const settingInfo = SETTING_INFO[key] || { label: varSchema.label, helper: '' };
 
-    switch (varSchema.type) {
-      case 'color':
-        return (
-          <div key={key} className="form-group">
-            <label className="form-label">{varSchema.label}</label>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <input
-                type="color"
-                value={value || '#000000'}
-                onChange={(e) => onChange(key, e.target.value)}
-                style={{ width: '60px', height: '40px', cursor: 'pointer' }}
-              />
-              <input
-                type="text"
-                className="form-input"
-                value={value || ''}
-                onChange={(e) => onChange(key, e.target.value)}
-                placeholder="#000000"
-                style={{ flex: 1 }}
-              />
+    if (varSchema.type === 'boolean') {
+      return (
+        <div key={key} className="space-y-2 py-3 border-b border-gray-100 last:border-0">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <label htmlFor={key} className="text-sm font-medium text-gray-900 cursor-pointer">
+                {settingInfo.label}
+              </label>
+              {settingInfo.helper && (
+                <p className="text-xs text-gray-600 mt-1">{settingInfo.helper}</p>
+              )}
             </div>
-          </div>
-        );
-
-      case 'text':
-        return (
-          <div key={key} className="form-group">
-            <label className="form-label">{varSchema.label}</label>
-            <input
-              type="text"
-              className="form-input"
-              value={value || ''}
-              onChange={(e) => onChange(key, e.target.value)}
-              placeholder={varSchema.default ? String(varSchema.default) : ''}
+            <Switch
+              id={key}
+              checked={value ?? varSchema.default ?? false}
+              onCheckedChange={(checked) => handleToggle(key, checked)}
+              disabled={disabled}
+              aria-label={settingInfo.label}
             />
           </div>
-        );
-
-      case 'number':
-        return (
-          <div key={key} className="form-group">
-            <label className="form-label">
-              {varSchema.label}
-              {varSchema.min !== undefined && varSchema.max !== undefined && (
-                <span style={{ color: '#666', fontWeight: 'normal', marginLeft: '8px' }}>
-                  ({varSchema.min} - {varSchema.max})
-                </span>
-              )}
-            </label>
-            <input
-              type="number"
-              className="form-input"
-              value={value ?? varSchema.default ?? ''}
-              onChange={(e) => onChange(key, Number(e.target.value))}
-              min={varSchema.min}
-              max={varSchema.max}
-              step={varSchema.step}
-            />
-          </div>
-        );
-
-      case 'slider':
-        return (
-          <div key={key} className="form-group">
-            <label className="form-label">
-              {varSchema.label}: {value ?? varSchema.default ?? 0}
-              {varSchema.min !== undefined && varSchema.max !== undefined && (
-                <span style={{ color: '#666', fontWeight: 'normal', marginLeft: '8px' }}>
-                  ({varSchema.min} - {varSchema.max})
-                </span>
-              )}
-            </label>
-            <input
-              type="range"
-              className="form-slider"
-              value={value ?? varSchema.default ?? 0}
-              onChange={(e) => onChange(key, Number(e.target.value))}
-              min={varSchema.min ?? 0}
-              max={varSchema.max ?? 100}
-              step={varSchema.step ?? 1}
-            />
-          </div>
-        );
-
-      case 'boolean':
-        return (
-          <div key={key} className="form-group">
-            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                className="form-checkbox"
-                checked={value ?? varSchema.default ?? false}
-                onChange={(e) => onChange(key, e.target.checked)}
-                style={{ marginRight: '8px' }}
-              />
-              <span className="form-label" style={{ margin: 0 }}>
-                {varSchema.label}
-              </span>
-            </label>
-          </div>
-        );
-
-      case 'select':
-        return (
-          <div key={key} className="form-group">
-            <label className="form-label">{varSchema.label}</label>
-            <select
-              className="form-select"
-              value={value ?? varSchema.default ?? ''}
-              onChange={(e) => onChange(key, e.target.value)}
-            >
-              {varSchema.options?.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        );
-
-      default:
-        return null;
+        </div>
+      );
     }
+
+    // Handle other types if needed (for future extensibility)
+    return null;
   };
 
   return (
-    <div>
-      {preset.variables_schema.map((varSchema) => renderControl(varSchema))}
+    <div className="space-y-1">
+      <div className="flex items-center gap-2 mb-4">
+        <Sparkles className="w-4 h-4 text-gray-600" />
+        <h3 className="text-base font-semibold text-gray-900">Look & Finish</h3>
+      </div>
+      <p className="text-xs text-gray-600 mb-4">
+        Edits lighting and background only. Product shape and branding are preserved.
+      </p>
+      <div className="space-y-0">
+        {preset.variables_schema.map((varSchema) => renderControl(varSchema))}
+      </div>
     </div>
   );
 }

@@ -1,12 +1,17 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import VariableControls from '@/components/VariableControls';
 import ImageUpload from '@/components/ImageUpload';
+import { BeforeAfterPreview } from '@/components/BeforeAfterPreview';
+import { Navigation, Footer } from '@/components/Navigation';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/Alert';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { getPreset } from '@/lib/presets';
 import type { Preset } from '@/lib/types';
 import { VariableValues } from '@/lib/types';
+import { Wand2, Loader2 } from 'lucide-react';
 
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -16,6 +21,7 @@ export default function Home() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ jobId: string; outputUrl: string } | null>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   // Initialize variables with defaults when preset loads
   useEffect(() => {
@@ -39,7 +45,6 @@ export default function Home() {
     };
     reader.readAsDataURL(file);
   }, []);
-
 
   const handleVariableChange = useCallback((key: string, value: any) => {
     setVariables(prev => ({ ...prev, [key]: value }));
@@ -76,6 +81,11 @@ export default function Home() {
         jobId: data.job_id,
         outputUrl: data.output_url,
       });
+
+      // Scroll to results on mobile
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
     } catch (err: any) {
       setError(err.message || 'An error occurred');
     } finally {
@@ -100,92 +110,128 @@ export default function Home() {
     setError(null);
   }, [preset]);
 
+  const handleDownload = useCallback(() => {
+    if (result?.outputUrl) {
+      const link = document.createElement('a');
+      link.href = result.outputUrl;
+      link.download = 'enhanced-image.png';
+      link.click();
+    }
+  }, [result]);
+
   return (
-    <div className="container" style={{ paddingTop: '40px', paddingBottom: '40px' }}>
-      <header style={{ marginBottom: '40px', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '8px' }}>
-          Product Photo Enhancer
-        </h1>
-        <p style={{ color: '#666', fontSize: '16px' }}>
-          Transform your product photos with AI-powered editing
-        </p>
-        <div style={{ marginTop: '16px' }}>
-          <Link href="/jobs" className="btn btn-secondary" style={{ marginRight: '8px' }}>
-            View Jobs
-          </Link>
+    <div className="min-h-screen flex flex-col">
+      <Navigation />
+      
+      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        {/* Header */}
+        <div className="text-center mb-8 lg:mb-12">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+            Product Photo Enhancer
+          </h1>
+          <p className="text-gray-600 text-sm sm:text-base">
+            Transform your product photos with AI-powered editing
+          </p>
         </div>
-      </header>
 
-      {error && (
-        <div className="card" style={{ background: '#f8d7da', color: '#721c24', border: '1px solid #f5c6cb' }}>
-          <strong>Error:</strong> {error}
-        </div>
-      )}
-
-      {result ? (
-        <div className="card">
-          <h2 style={{ marginBottom: '20px' }}>Enhancement Complete!</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-            <div>
-              <h3 style={{ marginBottom: '12px' }}>Original</h3>
-              {filePreview && (
-                <img src={filePreview} alt="Original" className="image-preview" />
-              )}
-            </div>
-            <div>
-              <h3 style={{ marginBottom: '12px' }}>Enhanced</h3>
-              <img src={result.outputUrl} alt="Enhanced" className="image-preview" />
-            </div>
+        {/* Error Alert */}
+        {error && (
+          <div className="mb-6">
+            <Alert variant="destructive">
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <a
-              href={result.outputUrl}
-              download
-              className="btn btn-primary"
-            >
-              Download Enhanced Image
-            </a>
-            <Link href={`/jobs/${result.jobId}`} className="btn btn-secondary">
-              View Job Details
-            </Link>
-            <button onClick={handleReset} className="btn btn-secondary">
-              Create Another
-            </button>
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className="card">
-            <h2 style={{ marginBottom: '20px' }}>1. Upload Product Photo</h2>
-            <ImageUpload
-              onFileSelect={handleFileSelect}
-              preview={filePreview}
-            />
-          </div>
+        )}
 
-          {preset && (
-            <div className="card">
-              <h2 style={{ marginBottom: '20px' }}>2. Adjust Settings</h2>
-              <VariableControls
-                preset={preset}
-                variables={variables}
-                onChange={handleVariableChange}
-              />
-            </div>
-          )}
+        {/* 2-Column Layout: Desktop, Stacked: Mobile */}
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
+          {/* Left Column: Controls */}
+          <div className="space-y-6">
+            {/* Upload Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Upload Product Photo</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ImageUpload
+                  onFileSelect={handleFileSelect}
+                  preview={filePreview}
+                  disabled={isProcessing}
+                />
+              </CardContent>
+            </Card>
 
-          <div className="card">
+            {/* Settings Card */}
+            {preset && (
+              <Card>
+                <CardContent className="pt-6">
+                  <VariableControls
+                    preset={preset}
+                    variables={variables}
+                    onChange={handleVariableChange}
+                    disabled={isProcessing}
+                  />
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Enhance Button */}
             <button
-              className="btn btn-primary"
               onClick={handleEnhance}
               disabled={!selectedFile || !preset || isProcessing}
-              style={{ width: '100%', fontSize: '18px', padding: '16px' }}
+              className="w-full btn btn-primary flex items-center justify-center gap-2 h-12 text-base font-medium"
             >
-              {isProcessing ? 'Enhancing...' : 'Enhance Image'}
+              {isProcessing ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Enhancing...
+                </>
+              ) : (
+                <>
+                  <Wand2 className="w-5 h-5" />
+                  Enhance Photo
+                </>
+              )}
             </button>
+
+            {/* Reset Button (only show when there's a result) */}
+            {result && (
+              <button
+                onClick={handleReset}
+                className="w-full btn btn-secondary"
+                disabled={isProcessing}
+              >
+                Create Another
+              </button>
+            )}
           </div>
-        </>
-      )}
+
+          {/* Right Column: Results */}
+          <div ref={resultsRef}>
+            <BeforeAfterPreview
+              beforeUrl={filePreview}
+              afterUrl={result?.outputUrl || null}
+              onDownload={result ? handleDownload : undefined}
+              isProcessing={isProcessing}
+            />
+            
+            {/* Job Link */}
+            {result && (
+              <div className="mt-4 text-center">
+                <Link
+                  href={`/jobs/${result.jobId}`}
+                  className="text-sm text-primary hover:underline"
+                >
+                  View job details →
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+
+      <Footer />
     </div>
   );
 }
