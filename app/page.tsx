@@ -186,13 +186,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 md:mb-24">
               <button
                 onClick={() => {
-                  const element = document.getElementById('upload-section');
-                  if (element) {
-                    const offset = 120; // Offset to position section header nicely
-                    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-                    const offsetPosition = elementPosition - offset;
-                    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-                  }
+                  document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' });
                 }}
                 className="w-full sm:w-auto px-8 py-4 text-base font-semibold rounded-full bg-black text-white hover:bg-black/90 transition-colors duration-200 shadow-lg"
               >
