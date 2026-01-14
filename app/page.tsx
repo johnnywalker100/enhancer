@@ -11,7 +11,7 @@ import { VariableValues } from '@/lib/types';
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
-  const [preset] = useState<Preset | null>(() => getPreset('luxury-studio-mvp'));
+  const [preset] = useState<Preset | null>(() => getPreset('luxury-studio-mvp') ?? null);
   const [variables, setVariables] = useState<VariableValues>({});
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
