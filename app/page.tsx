@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import VariableControls from '@/components/VariableControls';
 import ImageUpload from '@/components/ImageUpload';
+import { SettingsDrawer } from '@/components/SettingsDrawer';
 import { BeforeAfterPreview } from '@/components/BeforeAfterPreview';
 import { ExampleShowcase } from '@/components/ExampleShowcase';
 import { Navigation, Footer } from '@/components/Navigation';
@@ -218,14 +219,14 @@ export default function Home() {
 
           {/* Main Tool Section */}
           <section id="upload-section" className="container py-20 md:py-32">
-            <div className="max-w-5xl mx-auto">
+            <div className="max-w-4xl mx-auto">
               {/* Section Header */}
               <div className="text-center mb-12 md:mb-16">
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
                   Try it now
                 </h2>
                 <p className="text-lg text-muted-foreground">
-                  Upload a product photo and see the transformation
+                  Upload your product photo
                 </p>
               </div>
 
@@ -239,11 +240,40 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Main Grid: Settings on Left, Upload & Preview on Right */}
-              <div className="grid lg:grid-cols-[380px_1fr] gap-8 lg:gap-12">
-                {/* Left Column: Settings */}
+              {/* Main Layout: Upload Front and Center */}
+              <div className="space-y-6">
+                {/* Primary Upload Area */}
+                <div className="bg-white border border-border/50 rounded-2xl p-8 md:p-10 shadow-sm">
+                  <div className="max-w-2xl mx-auto">
+                    <div className="text-center mb-6">
+                      <h3 className="text-xl font-semibold text-foreground mb-2">
+                        Upload your product photo
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        JPEG, PNG, or WebP • Max 10 MB
+                      </p>
+                    </div>
+                    <ImageUpload
+                      onFileSelect={handleFileSelect}
+                      preview={filePreview}
+                      disabled={isProcessing}
+                    />
+                  </div>
+                </div>
+
+                {/* Settings Drawer */}
                 {preset && (
-                  <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm">
+                  <SettingsDrawer
+                    preset={preset}
+                    variables={variables}
+                    onChange={handleVariableChange}
+                    onReset={resetVariables}
+                    disabled={isProcessing}
+                    aspectRatio={aspectRatio}
+                    onAspectRatioChange={setAspectRatio}
+                    resolution={resolution}
+                    onResolutionChange={setResolution}
+                  >
                     <VariableControls
                       preset={preset}
                       variables={variables}
@@ -255,80 +285,59 @@ export default function Home() {
                       resolution={resolution}
                       onResolutionChange={setResolution}
                     />
+                  </SettingsDrawer>
+                )}
+
+                {/* Action Buttons - Show when image is selected */}
+                {selectedFile && (
+                  <div className="space-y-3 max-w-md mx-auto">
+                    <button
+                      onClick={handleEnhance}
+                      disabled={!selectedFile || !preset || isProcessing}
+                      className={cn(
+                        "w-full h-14 text-base font-semibold rounded-full inline-flex items-center justify-center gap-2",
+                        "bg-black text-white hover:bg-black/90 transition-all duration-200 shadow-lg",
+                        (!selectedFile || !preset || isProcessing) && "opacity-50 cursor-not-allowed"
+                      )}
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Enhancing...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-5 h-5" />
+                          Enhance Photo
+                        </>
+                      )}
+                    </button>
+
+                    {result && (
+                      <button
+                        onClick={handleReset}
+                        className="w-full h-12 text-base font-medium rounded-full border-2 border-border hover:bg-secondary/50 transition-colors duration-200 inline-flex items-center justify-center gap-2"
+                        disabled={isProcessing}
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        Create Another
+                      </button>
+                    )}
                   </div>
                 )}
 
-                {/* Right Column: Upload, Action Buttons & Preview */}
-                <div className="space-y-6">
-                  {/* Upload Section */}
-                  <div className="bg-white border border-border/50 rounded-2xl p-6 md:p-8 shadow-sm">
-                    <div className="mb-6">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Upload className="w-5 h-5 text-primary" />
-                        <h3 className="text-lg font-semibold text-foreground">Upload Photo</h3>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        JPEG, PNG, or WebP • Max 10MB
-                      </p>
-                    </div>
-                    <ImageUpload
-                      onFileSelect={handleFileSelect}
-                      preview={filePreview}
-                      disabled={isProcessing}
+                {/* Preview - Show when image is selected */}
+                {selectedFile && (
+                  <div ref={resultsRef} className="mt-8">
+                    <BeforeAfterPreview
+                      beforeUrl={filePreview}
+                      afterUrl={result?.outputUrl || null}
+                      onDownload={result ? handleDownload : undefined}
+                      isProcessing={isProcessing}
+                      resolution={resolution}
                     />
                   </div>
-
-                  {/* Action Buttons - Show when image is selected */}
-                  {selectedFile && (
-                    <div className="space-y-3">
-                      <button
-                        onClick={handleEnhance}
-                        disabled={!selectedFile || !preset || isProcessing}
-                        className={cn(
-                          "w-full h-14 text-base font-semibold rounded-full inline-flex items-center justify-center gap-2",
-                          "bg-black text-white hover:bg-black/90 transition-all duration-200 shadow-lg",
-                          (!selectedFile || !preset || isProcessing) && "opacity-50 cursor-not-allowed"
-                        )}
-                      >
-                        {isProcessing ? (
-                          <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            Enhancing...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-5 h-5" />
-                            Enhance Photo
-                          </>
-                        )}
-                      </button>
-
-                      {result && (
-                        <button
-                          onClick={handleReset}
-                          className="w-full h-12 text-base font-medium rounded-full border-2 border-border hover:bg-secondary/50 transition-colors duration-200 inline-flex items-center justify-center gap-2"
-                          disabled={isProcessing}
-                        >
-                          <RotateCcw className="w-4 h-4" />
-                          Create Another
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Preview - Show when image is selected */}
-                  {selectedFile && (
-                    <div ref={resultsRef}>
-                      <BeforeAfterPreview
-                        beforeUrl={filePreview}
-                        afterUrl={result?.outputUrl || null}
-                        onDownload={result ? handleDownload : undefined}
-                        isProcessing={isProcessing}
-                        resolution={resolution}
-                      />
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
             </div>
           </section>

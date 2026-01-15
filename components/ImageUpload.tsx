@@ -161,9 +161,10 @@ export default function ImageUpload({ onFileSelect, preview, disabled }: ImageUp
     <div>
       <div
         className={cn(
-          "upload-zone p-8 text-center cursor-pointer min-h-[180px] flex items-center justify-center",
-          "transition-all duration-200",
-          isDragging && "dragging",
+          "upload-zone p-10 md:p-12 text-center cursor-pointer min-h-[240px] flex items-center justify-center",
+          "transition-all duration-200 rounded-xl",
+          "border-2 border-dashed",
+          isDragging ? "border-primary bg-primary/5 scale-[1.02]" : "border-border/60 hover:border-border bg-muted/20",
           isDisabled && "opacity-50 cursor-not-allowed"
         )}
         onDragOver={handleDragOver}
@@ -171,43 +172,45 @@ export default function ImageUpload({ onFileSelect, preview, disabled }: ImageUp
         onDrop={handleDrop}
         onClick={openFilePicker}
       >
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-5 max-w-md">
           {/* Upload icon or loading spinner */}
           <div 
             className={cn(
-              "rounded-2xl p-4 transition-all duration-200",
-              isCompressing ? "bg-primary/10" : isDragging ? "bg-primary/20 scale-110" : "bg-muted/50"
+              "rounded-2xl p-5 transition-all duration-200",
+              isCompressing ? "bg-primary/10" : isDragging ? "bg-primary/20 scale-110" : "bg-primary/10"
             )}
           >
             {isCompressing ? (
-              <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              <Loader2 className="w-10 h-10 text-primary animate-spin" />
             ) : (
               <Upload className={cn(
-                "w-8 h-8 transition-colors duration-200",
-                isDragging ? "text-primary" : "text-muted-foreground"
+                "w-10 h-10 transition-colors duration-200",
+                isDragging ? "text-primary" : "text-primary"
               )} />
             )}
           </div>
           
-          <div className="space-y-2">
-            <p className="text-base font-medium text-foreground">
-              {isCompressing ? 'Compressing image...' : 'Drop your product image here'}
+          <div className="space-y-3">
+            <p className="text-lg font-semibold text-foreground">
+              {isCompressing ? 'Compressing image...' : 'Drag & drop your photo here'}
             </p>
             {!isCompressing && (
-              <p className="text-sm text-muted-foreground">
-                or <span className="text-primary font-medium cursor-pointer hover:underline">browse</span> to upload
-              </p>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openFilePicker();
+                }}
+                className="px-6 py-2.5 text-sm font-semibold rounded-full bg-black text-white hover:bg-black/90 transition-colors duration-200 inline-flex items-center gap-2"
+              >
+                <Upload className="w-4 h-4" />
+                Choose a file
+              </button>
             )}
           </div>
           
-          {!isCompressing && (
-            <p className="text-xs text-muted-foreground/80">
-              JPEG, PNG, or WebP • Max 4MB • Large images auto-compressed
-            </p>
-          )}
-          
           {error && (
-            <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-lg">
+            <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 px-4 py-2.5 rounded-lg">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <span>{error}</span>
             </div>
