@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 export function Navigation() {
   const pathname = usePathname();
   const isJobsPage = pathname === '/jobs' || pathname.startsWith('/jobs/');
+  const isCreditsPage = pathname === '/credits';
 
   return (
     <header className="border-b border-border/50 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
@@ -25,7 +26,7 @@ export function Navigation() {
           </Link>
 
           {/* Navigation Actions */}
-          <nav className="flex items-center gap-4">
+          <nav className="flex items-center gap-3">
             <Link 
               href="/jobs"
               className={cn(
@@ -36,6 +37,17 @@ export function Navigation() {
               )}
             >
               Jobs
+            </Link>
+            <Link 
+              href="/credits"
+              className={cn(
+                "px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200",
+                isCreditsPage 
+                  ? "bg-secondary text-foreground" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+              )}
+            >
+              Credits
             </Link>
           </nav>
         </div>
