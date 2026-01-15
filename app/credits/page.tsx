@@ -2,8 +2,6 @@
 
 import { Navigation, Footer } from '@/components/Navigation';
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
 import { 
   Sparkles, 
   Check, 
@@ -18,7 +16,7 @@ import { useState } from 'react';
 interface CreditPackage {
   id: string;
   name: string;
-  credits: number;
+  creditsPerMonth: number;
   price: number;
   pricePerCredit: number;
   popular?: boolean;
@@ -32,21 +30,22 @@ const packages: CreditPackage[] = [
   {
     id: 'starter',
     name: 'Starter',
-    credits: 10,
+    creditsPerMonth: 10,
     price: 9.99,
     pricePerCredit: 0.999,
     icon: <Sparkles className="w-6 h-6" />,
     features: [
-      '10 photo enhancements',
+      '10 credits per month',
       'Full quality downloads',
       'All presets included',
       'Standard processing',
+      'Cancel anytime',
     ],
   },
   {
     id: 'professional',
     name: 'Professional',
-    credits: 50,
+    creditsPerMonth: 50,
     price: 39.99,
     pricePerCredit: 0.799,
     popular: true,
@@ -54,29 +53,31 @@ const packages: CreditPackage[] = [
     savings: 'Save 20%',
     icon: <Zap className="w-6 h-6" />,
     features: [
-      '50 photo enhancements',
+      '50 credits per month',
       'Full quality downloads',
       'All presets included',
       'Priority processing',
       'Email support',
+      'Cancel anytime',
     ],
   },
   {
     id: 'business',
     name: 'Business',
-    credits: 200,
+    creditsPerMonth: 200,
     price: 119.99,
     pricePerCredit: 0.599,
     badge: 'Best Value',
     savings: 'Save 40%',
     icon: <Crown className="w-6 h-6" />,
     features: [
-      '200 photo enhancements',
+      '200 credits per month',
       'Full quality downloads',
       'All presets included',
       'Fastest processing',
       'Priority email support',
       'Bulk processing',
+      'Cancel anytime',
     ],
   },
 ];
@@ -122,7 +123,7 @@ export default function CreditsPage() {
             
             {/* Subtitle */}
             <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-4 leading-relaxed">
-              Select a credit package that fits your needs. Each credit enhances one photo.
+              Monthly plans that fit your workflow. Each credit enhances one photo.
             </p>
             
             {/* Current Balance - Placeholder */}
@@ -149,10 +150,10 @@ export default function CreditsPage() {
                 >
                   {/* Badge */}
                   {pkg.badge && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="bg-primary text-white px-4 py-1 text-xs font-semibold shadow-md">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                      <div className="bg-black text-white px-4 py-1.5 text-xs font-semibold shadow-lg rounded-full">
                         {pkg.badge}
-                      </Badge>
+                      </div>
                     </div>
                   )}
 
@@ -182,9 +183,10 @@ export default function CreditsPage() {
                       <span className="text-4xl md:text-5xl font-bold text-foreground">
                         ${pkg.price}
                       </span>
+                      <span className="text-lg text-muted-foreground">/month</span>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {pkg.credits} credits • ${pkg.pricePerCredit.toFixed(2)}/credit
+                      {pkg.creditsPerMonth} credits/month • ${pkg.pricePerCredit.toFixed(2)}/credit
                     </p>
                   </div>
 
@@ -199,14 +201,13 @@ export default function CreditsPage() {
                   </ul>
 
                   {/* CTA Button */}
-                  <Button
+                  <button
                     onClick={() => handlePurchase(pkg.id)}
                     disabled={isProcessing && selectedPackage === pkg.id}
                     className={cn(
                       "w-full h-12 text-base font-semibold rounded-full transition-all duration-200 inline-flex items-center justify-center gap-2",
-                      pkg.popular
-                        ? "bg-black text-white hover:bg-black/90 shadow-lg"
-                        : "bg-secondary text-foreground hover:bg-secondary/80 border-2 border-border"
+                      "bg-black text-white hover:bg-black/90 shadow-lg",
+                      "disabled:opacity-50 disabled:cursor-not-allowed"
                     )}
                   >
                     {isProcessing && selectedPackage === pkg.id ? (
@@ -216,11 +217,11 @@ export default function CreditsPage() {
                       </>
                     ) : (
                       <>
-                        Purchase Credits
+                        Get Started
                         <ArrowRight className="w-5 h-5" />
                       </>
                     )}
-                  </Button>
+                  </button>
                 </Card>
               ))}
             </div>
@@ -228,7 +229,7 @@ export default function CreditsPage() {
             {/* FAQ / Info Section */}
             <div className="mt-16 md:mt-20 text-center space-y-4">
               <h2 className="text-2xl font-bold text-foreground">
-                How Credits Work
+                How It Works
               </h2>
               <div className="max-w-3xl mx-auto grid sm:grid-cols-3 gap-6 mt-8">
                 <div className="p-6 rounded-xl bg-secondary/30 border border-border">
@@ -236,10 +237,10 @@ export default function CreditsPage() {
                     <span className="text-xl font-bold text-primary">1</span>
                   </div>
                   <h3 className="font-semibold text-foreground mb-2">
-                    Purchase Credits
+                    Choose Your Plan
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Choose a package that fits your needs
+                    Select a monthly plan that fits your workflow
                   </p>
                 </div>
                 <div className="p-6 rounded-xl bg-secondary/30 border border-border">
@@ -250,7 +251,7 @@ export default function CreditsPage() {
                     Enhance Photos
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Each enhancement uses one credit
+                    Use one credit per photo enhancement
                   </p>
                 </div>
                 <div className="p-6 rounded-xl bg-secondary/30 border border-border">
@@ -258,10 +259,10 @@ export default function CreditsPage() {
                     <span className="text-xl font-bold text-primary">3</span>
                   </div>
                   <h3 className="font-semibold text-foreground mb-2">
-                    Never Expire
+                    Cancel Anytime
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    Your credits never expire
+                    No long-term commitment required
                   </p>
                 </div>
               </div>
@@ -270,7 +271,7 @@ export default function CreditsPage() {
             {/* Additional Info */}
             <div className="mt-12 text-center">
               <p className="text-sm text-muted-foreground">
-                All purchases are secure and processed through industry-standard payment providers.
+                All subscriptions are secure and processed through industry-standard payment providers.
                 <br />
                 Need help? <a href="mailto:support@example.com" className="text-primary hover:underline">Contact support</a>
               </p>
