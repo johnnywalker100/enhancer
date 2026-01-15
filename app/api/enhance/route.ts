@@ -59,10 +59,10 @@ export async function POST(request: NextRequest) {
     // Inject variables into template
     const finalPromptJson = injectVariables(preset, variables);
     
-    // Compile to fal format
+    // Compile to API易 format
     const compiled = compilePrompt(preset, finalPromptJson);
 
-    // Fal options are fixed: resolution=1K, num_images=1, output_format=png
+    // API options are fixed: resolution=1K, num_images=1, output_format=png
     // (set in preset.fal_defaults, no variables needed)
     
     // Validate and read the uploaded file (no filesystem operations)
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     
     // For MVP: synchronous processing (can upgrade to async/queue later)
     try {
-      // Upload image directly to fal.ai storage (no local file system needed)
+      // Process image with API易 (no local file system needed)
       const enhanceOptions: any = {
         prompt: compiled.prompt_string,
         image_buffer: validatedFile.buffer,
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       const outputImageUrl = falResult.images?.[0]?.url || null;
       
       if (!outputImageUrl) {
-        throw new Error('No output image URL returned from fal.ai');
+        throw new Error('No output image URL returned from API易');
       }
       
       // Update job with success

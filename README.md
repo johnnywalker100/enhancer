@@ -1,6 +1,6 @@
 # Product Photo Enhancer SaaS
 
-A full-stack SaaS application that enhances product photos using AI-powered editing via fal.ai's nano-banana-pro/edit model.
+A full-stack SaaS application that enhances product photos using AI-powered editing via API易's (apiyi.com) Nano Banana Pro image generation service.
 
 ## Features
 
@@ -9,14 +9,14 @@ A full-stack SaaS application that enhances product photos using AI-powered edit
 - **Dynamic Variables**: Adjust settings like background color, shadow strength, output format, and resolution
 - **Variable Injection**: Supports placeholder-based (`{{var}}`) variable injection into JSON prompt templates
 - **Job History**: Track all enhancement jobs with status, input/output images, and settings
-- **Server-Side Processing**: All fal.ai API calls are made server-side to protect your API key
+- **Server-Side Processing**: All API易 API calls are made server-side to protect your API key
 
 ## Tech Stack
 
 - **Next.js 14** (App Router)
 - **TypeScript**
 - **Supabase** (PostgreSQL) for job storage and file uploads
-- **fal.ai** for image enhancement
+- **API易 (apiyi.com)** - Nano Banana Pro for image enhancement
 - **React** for UI components
 
 ## Setup
@@ -34,9 +34,11 @@ A full-stack SaaS application that enhances product photos using AI-powered edit
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
    
-   # fal.ai
-   FAL_KEY=your_fal_api_key_here
+   # API易 (apiyi.com)
+   APIYI_API_KEY=your_apiyi_api_key_here
    ```
+   
+   Get your API易 key from: https://api.apiyi.com/console
 
 3. **Set up Supabase:**
    - Create a Supabase project at https://supabase.com
@@ -70,8 +72,8 @@ nano/
 │   ├── supabase.ts               # Supabase client setup
 │   ├── presets.ts                # ⭐ YOUR PRESET CONFIGURATIONS GO HERE
 │   ├── variable-injection.ts     # Variable injection logic
-│   ├── compiler.ts               # JSON-to-fal prompt compiler
-│   ├── fal.ts                    # fal.ai client integration
+│   ├── compiler.ts               # JSON-to-API prompt compiler
+│   ├── fal.ts                    # API易 client integration
 │   ├── session.ts                # Session management
 │   ├── types.ts                  # TypeScript types
 │   └── upload.ts                 # File upload utilities
@@ -88,7 +90,7 @@ Edit this file to add your own JSON prompt templates. Each preset includes:
 1. **`prompt_template_json`**: Your JSON prompt with `{{variable}}` placeholders
 2. **`variables_schema`**: Definition of what variables exist and how to render them in the UI
 3. **`injection_mode`**: Currently supports `'placeholder'` (JSONPath coming soon)
-4. **`compiler_rules`**: How to convert your JSON into fal.ai's prompt format
+4. **`compiler_rules`**: How to convert your JSON into API易's prompt format
 
 ### Example Preset Structure
 
@@ -164,11 +166,11 @@ Will support patch operations like:
 
 ## How Compilation Works
 
-The compiler converts your final JSON (after variable injection) into fal.ai's required format.
+The compiler converts your final JSON (after variable injection) into API易's required format.
 
 **Current rules:**
 - If `compiler_rules.use_fal_prompt_field` is true, extracts the prompt from the specified path (e.g., `fal.prompt`)
-- Extracts fal options (output_format, resolution, etc.) from the JSON
+- Extracts API options (output_format, resolution, aspect_ratio, etc.) from the JSON
 - Falls back to stringifying the entire JSON if no rules are specified
 
 You can customize this in `lib/compiler.ts` or extend `compiler_rules` in your presets.
@@ -226,11 +228,11 @@ Jobs are stored in Supabase (PostgreSQL) with the following fields:
 - `session_id`: Anonymous session identifier
 - `preset_id`: Preset used
 - `input_image_url`: Local path to uploaded image
-- `output_image_url`: fal.ai returned URL
+- `output_image_url`: API易 returned URL (data URL format)
 - `status`: queued | processing | complete | failed
 - `variables_json`: JSONB object of user-selected variables
-- `compiled_prompt_string`: Final prompt sent to fal.ai
-- `fal_request_id`: fal.ai request ID
+- `compiled_prompt_string`: Final prompt sent to API易
+- `fal_request_id`: API易 request ID (for legacy compatibility)
 - `error_message`: Error message if failed
 
 See `supabase-schema.sql` for the complete schema with indexes and Row Level Security policies.
