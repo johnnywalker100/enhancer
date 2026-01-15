@@ -7,7 +7,6 @@ import {
   Check, 
   Zap, 
   Crown,
-  Star,
   ArrowRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -107,15 +106,8 @@ export default function CreditsPage() {
       
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="container pt-20 pb-12 md:pt-32 md:pb-16">
+        <section className="container pt-12 pb-8 md:pt-20 md:pb-12">
           <div className="max-w-4xl mx-auto text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* Icon */}
-            <div className="flex justify-center mb-8">
-              <div className="w-20 h-20 md:w-24 md:h-24 rounded-[28px] bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-2xl shadow-primary/25">
-                <Star className="w-10 h-10 md:w-12 md:h-12 text-white" />
-              </div>
-            </div>
-            
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground tracking-tight mb-6 leading-[1.1]">
               Choose Your Credits
