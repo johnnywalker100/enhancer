@@ -6,7 +6,7 @@ import { Switch } from './ui/Switch';
 import { Select } from './ui/Select';
 import { ColorPicker } from './ui/ColorPicker';
 import { cn } from '@/lib/utils';
-import { Sparkles, RotateCcw, Ratio } from 'lucide-react';
+import { Sparkles, RotateCcw, Ratio, Maximize } from 'lucide-react';
 
 interface VariableControlsProps {
   preset: Preset;
@@ -16,6 +16,8 @@ interface VariableControlsProps {
   disabled?: boolean;
   aspectRatio?: string;
   onAspectRatioChange?: (value: string) => void;
+  resolution?: string;
+  onResolutionChange?: (value: string) => void;
 }
 
 // Aspect ratio icon component
@@ -107,7 +109,9 @@ export default function VariableControls({
   onReset, 
   disabled,
   aspectRatio = 'auto',
-  onAspectRatioChange
+  onAspectRatioChange,
+  resolution = '2K',
+  onResolutionChange
 }: VariableControlsProps) {
   const handleToggle = (key: string, checked: boolean) => {
     // Mutual exclusivity: if enabling floating shadow, disable contact shadow and vice versa
@@ -208,6 +212,58 @@ export default function VariableControls({
 
   return (
     <div className="space-y-4">
+      {/* Resolution Selector */}
+      {onResolutionChange && (
+        <div className="pb-5 border-b border-border/40">
+          <div className="flex items-center gap-2 mb-1.5">
+            <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-primary/10">
+              <Maximize className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <label className="text-sm font-semibold text-foreground">
+              Output Resolution
+            </label>
+          </div>
+          <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+            Higher resolution means better quality but slower processing.
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            {['1K', '2K', '4K'].map((res) => (
+              <button
+                key={res}
+                type="button"
+                onClick={() => onResolutionChange(res)}
+                disabled={disabled}
+                className={cn(
+                  "relative px-4 py-3 rounded-lg border-2 transition-all duration-200",
+                  "hover:border-primary/50 hover:bg-primary/5",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  resolution === res
+                    ? "border-primary bg-primary/10 font-semibold text-foreground"
+                    : "border-border/50 text-muted-foreground font-medium"
+                )}
+              >
+                <div className="text-center">
+                  <div className={cn(
+                    "text-lg font-bold",
+                    resolution === res ? "text-foreground" : "text-foreground/70"
+                  )}>
+                    {res}
+                  </div>
+                  <div className="text-[10px] mt-0.5">
+                    {res === '1K' && 'Fast'}
+                    {res === '2K' && 'Balanced'}
+                    {res === '4K' && 'Best'}
+                  </div>
+                </div>
+                {resolution === res && (
+                  <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary" />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Aspect Ratio Selector */}
       {onAspectRatioChange && (
         <div className="pb-5 border-b border-border/40">

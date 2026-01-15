@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
     const presetId = formData.get('preset_id') as string;
     const variablesJson = formData.get('variables') as string;
     const aspectRatio = formData.get('aspect_ratio') as string;
+    const resolution = formData.get('resolution') as string;
     const imageFile = formData.get('image') as File;
     
     if (!presetId) {
@@ -97,6 +98,12 @@ export async function POST(request: NextRequest) {
         console.log('Setting aspect ratio to:', aspectRatio);
       } else {
         console.log('Using auto aspect ratio (original dimensions)');
+      }
+      
+      // Add resolution if provided
+      if (resolution) {
+        enhanceOptions.resolution = resolution;
+        console.log('Setting resolution to:', resolution);
       }
       
       const falResult = await enhanceImage(enhanceOptions);

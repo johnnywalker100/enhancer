@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Download, Eye, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Download, Eye, Loader2, Sparkles } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './ui/Tabs';
 import { cn } from '@/lib/utils';
 
@@ -10,13 +10,43 @@ interface BeforeAfterPreviewProps {
   afterUrl: string | null;
   onDownload?: () => void;
   isProcessing?: boolean;
+  resolution?: string;
 }
 
-export function BeforeAfterPreview({ beforeUrl, afterUrl, onDownload, isProcessing }: BeforeAfterPreviewProps) {
+export function BeforeAfterPreview({ beforeUrl, afterUrl, onDownload, isProcessing, resolution = '2K' }: BeforeAfterPreviewProps) {
   const [activeTab, setActiveTab] = useState<'before' | 'after'>('after');
+  const [progress, setProgress] = useState(0);
+
+  // Simulate progress animation based on resolution
+  useEffect(() => {
+    if (isProcessing) {
+      setProgress(0);
+      
+      // Expected time based on resolution
+      const expectedTime = resolution === '1K' ? 10000 : resolution === '2K' ? 20000 : 30000; // ms
+      const updateInterval = 300; // Update every 300ms for smooth animation
+      const totalSteps = expectedTime / updateInterval;
+      const progressPerStep = 95 / totalSteps; // Go up to 95% (leave 5% for final step)
+      
+      const interval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 95) return prev; // Cap at 95% until actual completion
+          const increment = progressPerStep + (Math.random() * 0.5 - 0.25); // Small random variation
+          return Math.min(prev + increment, 95);
+        });
+      }, updateInterval);
+      
+      return () => clearInterval(interval);
+    } else {
+      setProgress(0);
+    }
+  }, [isProcessing, resolution]);
 
   // Processing state with loading animation
   if (isProcessing) {
+    const circumference = 2 * Math.PI * 54; // radius = 54
+    const strokeDashoffset = circumference - (progress / 100) * circumference;
+
     return (
       <div className="magic-card p-4 sm:p-6">
         <div className="mb-3 sm:mb-4">
@@ -25,18 +55,66 @@ export function BeforeAfterPreview({ beforeUrl, afterUrl, onDownload, isProcessi
         </div>
         
         <div className="relative w-full min-h-[300px] sm:min-h-[400px] rounded-lg sm:rounded-xl overflow-hidden bg-gradient-to-br from-muted/30 to-muted/10 border border-border/30 flex items-center justify-center">
-          <div className="flex flex-col items-center justify-center gap-4 sm:gap-5 py-12">
-            {/* Animated loader */}
+          <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 py-12">
+            {/* Circular Progress Ring */}
             <div className="relative">
-              <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
-              <div className="relative flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20">
-                <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 text-primary animate-spin" />
+              {/* Outer glow effect */}
+              <div className="absolute inset-0 rounded-full bg-primary/10 blur-xl animate-pulse" />
+              
+              {/* SVG Progress Circle */}
+              <div className="relative">
+                <svg className="w-28 h-28 sm:w-36 sm:h-36 transform -rotate-90" viewBox="0 0 120 120">
+                  {/* Background circle */}
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="54"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                    className="text-muted/20"
+                  />
+                  {/* Progress circle */}
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="54"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeDashoffset}
+                    strokeLinecap="round"
+                    className="text-primary transition-all duration-500 ease-out"
+                  />
+                </svg>
+                
+                {/* Center content */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 text-primary animate-pulse" />
+                  <div className="mt-2 text-xl sm:text-2xl font-bold text-foreground">
+                    {Math.round(progress)}%
+                  </div>
+                </div>
               </div>
             </div>
             
-            <div className="text-center px-4">
-              <p className="text-xs sm:text-sm font-medium text-foreground">Enhancing your photo</p>
-              <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">This usually takes 10-15 seconds</p>
+            <div className="text-center px-4 space-y-2">
+              <p className="text-xs sm:text-sm font-medium text-foreground">
+                Enhancing your photo at {resolution}
+              </p>
+              <p className="text-[11px] sm:text-xs text-muted-foreground">
+                {progress < 25 && 'Analyzing image...'}
+                {progress >= 25 && progress < 50 && 'Applying enhancements...'}
+                {progress >= 50 && progress < 75 && 'Refining details...'}
+                {progress >= 75 && progress < 95 && 'Finalizing output...'}
+                {progress >= 95 && 'Almost done...'}
+              </p>
+              <p className="text-[10px] sm:text-[11px] text-muted-foreground/60 mt-1">
+                {resolution === '1K' && '~10 seconds'}
+                {resolution === '2K' && '~20 seconds'}
+                {resolution === '4K' && '~30 seconds'}
+              </p>
             </div>
           </div>
         </div>

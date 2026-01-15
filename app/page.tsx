@@ -27,6 +27,7 @@ export default function Home() {
   const [preset] = useState<Preset | null>(() => getPreset('luxury-studio-mvp') ?? null);
   const [variables, setVariables] = useState<VariableValues>({});
   const [aspectRatio, setAspectRatio] = useState<string>('auto');
+  const [resolution, setResolution] = useState<string>('2K');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ outputUrl: string; requestId?: string } | null>(null);
@@ -69,6 +70,7 @@ export default function Home() {
       }
       setVariables(defaults);
       setAspectRatio('auto');
+      setResolution('2K');
     }
   }, [preset]);
 
@@ -88,6 +90,7 @@ export default function Home() {
       formData.append('preset_id', preset.id);
       formData.append('variables', JSON.stringify(variables));
       formData.append('aspect_ratio', aspectRatio);
+      formData.append('resolution', resolution);
 
       const response = await fetch('/api/enhance', {
         method: 'POST',
@@ -130,7 +133,7 @@ export default function Home() {
     } finally {
       setIsProcessing(false);
     }
-  }, [selectedFile, preset, variables, aspectRatio]);
+  }, [selectedFile, preset, variables, aspectRatio, resolution]);
 
   const handleReset = useCallback(() => {
     setSelectedFile(null);
@@ -249,6 +252,8 @@ export default function Home() {
                       disabled={isProcessing}
                       aspectRatio={aspectRatio}
                       onAspectRatioChange={setAspectRatio}
+                      resolution={resolution}
+                      onResolutionChange={setResolution}
                     />
                   </div>
                 )}
@@ -319,6 +324,7 @@ export default function Home() {
                         afterUrl={result?.outputUrl || null}
                         onDownload={result ? handleDownload : undefined}
                         isProcessing={isProcessing}
+                        resolution={resolution}
                       />
                     </div>
                   )}
