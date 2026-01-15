@@ -144,7 +144,7 @@ export default function CreditsPage() {
                 <Card
                   key={pkg.id}
                   className={cn(
-                    "relative p-6 md:p-8 transition-all duration-300 hover:shadow-xl",
+                    "relative p-6 md:p-8 transition-all duration-300 hover:shadow-xl flex flex-col",
                     pkg.popular && "border-primary border-2 shadow-lg scale-105 md:scale-110"
                   )}
                 >
@@ -191,7 +191,7 @@ export default function CreditsPage() {
                   </div>
 
                   {/* Features */}
-                  <ul className="space-y-3 mb-8">
+                  <ul className="space-y-3 mb-8 flex-grow">
                     {pkg.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-3">
                         <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
