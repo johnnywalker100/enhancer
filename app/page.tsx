@@ -5,22 +5,27 @@ import VariableControls from '@/components/VariableControls';
 import ImageUpload from '@/components/ImageUpload';
 import { SettingsDrawer } from '@/components/SettingsDrawer';
 import { BeforeAfterPreview } from '@/components/BeforeAfterPreview';
-import { ExampleShowcase } from '@/components/ExampleShowcase';
-import { Navigation, Footer } from '@/components/Navigation';
+import { Navigation } from '@/components/Navigation';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/Alert';
 import { getPreset } from '@/lib/presets';
 import type { Preset } from '@/lib/types';
 import { VariableValues } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { 
-  Sparkles, 
-  Upload, 
-  ShieldCheck, 
-  Lightbulb, 
+import {
+  Sparkles,
+  Upload,
+  ShieldCheck,
+  Lightbulb,
   CheckCircle,
   RotateCcw,
   Loader2
 } from 'lucide-react';
+import { HeroSection } from '@/components/HeroSection'
+import { GallerySection } from '@/components/GallerySection'
+import { ProcessSection } from '@/components/ProcessSection'
+import { DemoSection } from '@/components/DemoSection'
+import { AppPreviewSection } from '@/components/AppPreviewSection'
+import { Footer } from '@/components/Footer'
 
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -101,7 +106,7 @@ export default function Home() {
       if (!response.ok) {
         const contentType = response.headers.get('content-type');
         let errorMessage = `Server returned ${response.status} ${response.statusText}`;
-        
+
         if (contentType && contentType.includes('application/json')) {
           try {
             const errorData = await response.json();
@@ -114,7 +119,7 @@ export default function Home() {
           const text = await response.text();
           errorMessage = text || errorMessage;
         }
-        
+
         throw new Error(errorMessage);
       }
 
@@ -162,108 +167,81 @@ export default function Home() {
   }, [result]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-white font-[var(--font-sans)]">
       <Navigation />
-      
+
       <main className="flex-1">
-        {/* Hero Section - Mobbin Style */}
-        <section className="container pt-20 pb-16 md:pt-32 md:pb-24">
-          <div className="max-w-4xl mx-auto text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* Icon */}
-            <div className="flex justify-center mb-8 md:mb-12">
-              <div className="w-20 h-20 md:w-28 md:h-28 rounded-[28px] md:rounded-[38px] bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-2xl shadow-primary/25">
-                <Sparkles className="w-10 h-10 md:w-14 md:h-14 text-white" />
-              </div>
+        <div className="font-[var(--font-sans)]">
+          <HeroSection />
+
+          <GallerySection />
+
+          <ProcessSection />
+
+          <DemoSection />
+
+          <AppPreviewSection />
+        </div>
+
+
+        {/* Main Tool Section */}
+        <section id="upload-section" className="container py-20 md:py-32 hidden">
+          <div className="max-w-4xl mx-auto">
+            {/* Section Header */}
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
+                Try it now
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Upload your product photo
+              </p>
             </div>
-            
-            {/* Main Headline */}
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-foreground tracking-tight mb-6 md:mb-8 leading-[1.1]">
-              Turn any photos into studio shots.
-            </h1>
-            
-            {/* Subtitle */}
-            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-10 md:mb-12 leading-relaxed">
-              AI-powered product enhancement that preserves details, adds professional lighting, and removes backgrounds.
-            </p>
-            
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 md:mb-24">
-              <button
-                onClick={() => {
-                  document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="w-full sm:w-auto px-8 py-4 text-base font-semibold rounded-full bg-black text-white hover:bg-black/90 transition-colors duration-200 shadow-lg"
-              >
-                Try for free
-              </button>
-              <button
-                onClick={() => {
-                  document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="w-full sm:w-auto px-8 py-4 text-base font-semibold rounded-full border-2 border-border text-foreground hover:bg-secondary/50 transition-colors duration-200 inline-flex items-center justify-center gap-2"
-              >
-                See how it works
-                <span aria-hidden="true">→</span>
-              </button>
-            </div>
-          </div>
-        </section>
 
-          {/* How It Works & Example Showcase Section - Merged */}
-          <div id="how-it-works">
-            <ExampleShowcase
-              beforeImage="/examples/example-before.png"
-              afterImage="/examples/example-after.png"
-            />
-          </div>
-
-          {/* Main Tool Section */}
-          <section id="upload-section" className="container py-20 md:py-32">
-            <div className="max-w-4xl mx-auto">
-              {/* Section Header */}
-              <div className="text-center mb-12 md:mb-16">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
-                  Try it now
-                </h2>
-                <p className="text-lg text-muted-foreground">
-                  Upload your product photo
-                </p>
+            {/* Error Alert */}
+            {error && (
+              <div className="mb-8">
+                <Alert variant="destructive">
+                  <AlertTitle>Something went wrong</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               </div>
+            )}
 
-              {/* Error Alert */}
-              {error && (
-                <div className="mb-8">
-                  <Alert variant="destructive">
-                    <AlertTitle>Something went wrong</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                </div>
-              )}
-
-              {/* Main Layout: Upload Front and Center */}
-              <div className="space-y-6">
-                {/* Primary Upload Area */}
-                <div className="bg-white border border-border/50 rounded-2xl p-8 md:p-10 shadow-sm">
-                  <div className="max-w-2xl mx-auto">
-                    <div className="text-center mb-6">
-                      <h3 className="text-xl font-semibold text-foreground mb-2">
-                        Upload your product photo
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        JPEG, PNG, or WebP • Max 10 MB
-                      </p>
-                    </div>
-                    <ImageUpload
-                      onFileSelect={handleFileSelect}
-                      preview={filePreview}
-                      disabled={isProcessing}
-                    />
+            {/* Main Layout: Upload Front and Center */}
+            <div className="space-y-6">
+              {/* Primary Upload Area */}
+              <div className="bg-white border border-border/50 rounded-2xl p-8 md:p-10 shadow-sm">
+                <div className="max-w-2xl mx-auto">
+                  <div className="text-center mb-6">
+                    <h3 className="text-xl font-semibold text-foreground mb-2">
+                      Upload your product photo
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      JPEG, PNG, or WebP • Max 10 MB
+                    </p>
                   </div>
+                  <ImageUpload
+                    onFileSelect={handleFileSelect}
+                    preview={filePreview}
+                    disabled={isProcessing}
+                  />
                 </div>
+              </div>
 
-                {/* Settings Drawer */}
-                {preset && (
-                  <SettingsDrawer
+              {/* Settings Drawer */}
+              {preset && (
+                <SettingsDrawer
+                  preset={preset}
+                  variables={variables}
+                  onChange={handleVariableChange}
+                  onReset={resetVariables}
+                  disabled={isProcessing}
+                  aspectRatio={aspectRatio}
+                  onAspectRatioChange={setAspectRatio}
+                  resolution={resolution}
+                  onResolutionChange={setResolution}
+                >
+                  <VariableControls
                     preset={preset}
                     variables={variables}
                     onChange={handleVariableChange}
@@ -273,98 +251,66 @@ export default function Home() {
                     onAspectRatioChange={setAspectRatio}
                     resolution={resolution}
                     onResolutionChange={setResolution}
-                  >
-                    <VariableControls
-                      preset={preset}
-                      variables={variables}
-                      onChange={handleVariableChange}
-                      onReset={resetVariables}
-                      disabled={isProcessing}
-                      aspectRatio={aspectRatio}
-                      onAspectRatioChange={setAspectRatio}
-                      resolution={resolution}
-                      onResolutionChange={setResolution}
-                    />
-                  </SettingsDrawer>
-                )}
+                  />
+                </SettingsDrawer>
+              )}
 
-                {/* Action Buttons - Show when image is selected */}
-                {selectedFile && (
-                  <div className="space-y-3 max-w-md mx-auto">
-                    <button
-                      onClick={handleEnhance}
-                      disabled={!selectedFile || !preset || isProcessing}
-                      className={cn(
-                        "w-full h-14 text-base font-semibold rounded-full inline-flex items-center justify-center gap-2",
-                        "bg-black text-white hover:bg-black/90 transition-all duration-200 shadow-lg",
-                        (!selectedFile || !preset || isProcessing) && "opacity-50 cursor-not-allowed"
-                      )}
-                    >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Enhancing...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-5 h-5" />
-                          Enhance Photo
-                        </>
-                      )}
-                    </button>
-
-                    {result && (
-                      <button
-                        onClick={handleReset}
-                        className="w-full h-12 text-base font-medium rounded-full border-2 border-border hover:bg-secondary/50 transition-colors duration-200 inline-flex items-center justify-center gap-2"
-                        disabled={isProcessing}
-                      >
-                        <RotateCcw className="w-4 h-4" />
-                        Create Another
-                      </button>
+              {/* Action Buttons - Show when image is selected */}
+              {selectedFile && (
+                <div className="space-y-3 max-w-md mx-auto">
+                  <button
+                    onClick={handleEnhance}
+                    disabled={!selectedFile || !preset || isProcessing}
+                    className={cn(
+                      "w-full h-14 text-base font-semibold rounded-full inline-flex items-center justify-center gap-2",
+                      "bg-black text-white hover:bg-black/90 transition-all duration-200 shadow-lg",
+                      (!selectedFile || !preset || isProcessing) && "opacity-50 cursor-not-allowed"
                     )}
-                  </div>
-                )}
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Enhancing...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5" />
+                        Enhance Photo
+                      </>
+                    )}
+                  </button>
 
-                {/* Preview - Show when image is selected */}
-                {selectedFile && (
-                  <div ref={resultsRef} className="mt-8">
-                    <BeforeAfterPreview
-                      beforeUrl={filePreview}
-                      afterUrl={result?.outputUrl || null}
-                      onDownload={result ? handleDownload : undefined}
-                      isProcessing={isProcessing}
-                      resolution={resolution}
-                    />
-                  </div>
-                )}
-              </div>
+                  {result && (
+                    <button
+                      onClick={handleReset}
+                      className="w-full h-12 text-base font-medium rounded-full border-2 border-border hover:bg-secondary/50 transition-colors duration-200 inline-flex items-center justify-center gap-2"
+                      disabled={isProcessing}
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      Create Another
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Preview - Show when image is selected */}
+              {selectedFile && (
+                <div ref={resultsRef} className="mt-8">
+                  <BeforeAfterPreview
+                    beforeUrl={filePreview}
+                    afterUrl={result?.outputUrl || null}
+                    onDownload={result ? handleDownload : undefined}
+                    isProcessing={isProcessing}
+                    resolution={resolution}
+                  />
+                </div>
+              )}
             </div>
-          </section>
+          </div>
+        </section>
+      </main>
 
-          {/* Trust Indicators */}
-          <section className="container py-20 md:py-32 border-t border-border/50">
-            <div className="max-w-5xl mx-auto text-center">
-              <p className="text-sm text-muted-foreground mb-6">Trusted features</p>
-              <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 text-muted-foreground/60">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-5 h-5" />
-                  <span className="text-sm font-medium">Detail Preservation</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Lightbulb className="w-5 h-5" />
-                  <span className="text-sm font-medium">Studio Lighting</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5" />
-                  <span className="text-sm font-medium">No Distortions</span>
-                </div>
-              </div>
-            </div>
-          </section>
-        </main>
-
-        <Footer />
-      </div>
+      <Footer />
+    </div>
   );
 }
