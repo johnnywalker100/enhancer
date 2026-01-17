@@ -23,7 +23,7 @@ export function HeroSection() {
                     <Button
                         size="lg"
                         className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 font-semibold text-sm"
-                        asChild
+
                     >
                         <a href="#demo">Try for free</a>
                     </Button>
@@ -31,7 +31,6 @@ export function HeroSection() {
                         size="lg"
                         variant="outline"
                         className="rounded-full px-8 font-semibold border border-foreground text-foreground hover:bg-muted/50 bg-transparent text-sm"
-                        asChild
                     >
                         <a href="#process">See how it works</a>
                     </Button>

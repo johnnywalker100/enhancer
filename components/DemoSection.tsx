@@ -36,7 +36,6 @@ export function DemoSection() {
                     <Button
                         size="lg"
                         className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 font-semibold text-sm transition-all duration-200"
-                        asChild
                     >
                         <a href="#app-preview">Try with your photo</a>
                     </Button>
