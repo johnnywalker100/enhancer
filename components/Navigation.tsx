@@ -11,7 +11,7 @@ export function Navigation() {
   const isCreditsPage = pathname === '/credits';
 
   return (
-    <header className="bg-background">
+    <header className="border-b border-border/50 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="container">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo & Brand */}
@@ -26,14 +26,14 @@ export function Navigation() {
           </Link>
 
           {/* Navigation Actions */}
-          <nav className="flex items-center gap-6">
+          <nav className="flex items-center gap-3">
             <Link 
               href="/jobs"
               className={cn(
-                "text-sm font-medium transition-colors duration-200",
+                "px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200",
                 isJobsPage 
-                  ? "text-foreground" 
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-secondary text-foreground" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
               )}
             >
               Jobs
@@ -41,10 +41,10 @@ export function Navigation() {
             <Link 
               href="/credits"
               className={cn(
-                "text-sm font-medium transition-colors duration-200",
+                "px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200",
                 isCreditsPage 
-                  ? "text-foreground" 
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-secondary text-foreground" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
               )}
             >
               Credits
